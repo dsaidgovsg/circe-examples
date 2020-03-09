@@ -2,8 +2,8 @@ import Dependencies._
 
 ThisBuild / scalaVersion     := "2.13.1"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "circe-examples"
-ThisBuild / organizationName := "circe-examples"
+ThisBuild / organization     := "circeeg"
+ThisBuild / organizationName := "circeeg"
 
 val circeVersion = "0.12.3"
 

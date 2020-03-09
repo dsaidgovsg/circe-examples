@@ -1,4 +1,4 @@
-package main
+package circeeg.main
 
 import io.circe._
 import io.circe.generic.auto._
@@ -6,24 +6,10 @@ import io.circe.generic.extras._
 import io.circe.parser._
 import io.circe.syntax._
 
-// date_iterator
+import circeeg.util.{BarVal, BazVal, Foo}
+import circeeg.util.conf._
 
 object Main extends App {
-  // This makes all members to be snake_case
-  implicit val config: Configuration = Configuration.default
-    .withSnakeCaseConstructorNames
-    .withSnakeCaseMemberNames
-
-  @ConfiguredJsonCodec
-  sealed trait Foo
-
-  @ConfiguredJsonCodec
-  case class BarVal(valInt: Int, valDbl: Option[Double]) extends Foo
-
-  @ConfiguredJsonCodec
-  case class BazVal(valVec: Vector[String]) extends Foo
-
-
   //
   // BarVal
   //
