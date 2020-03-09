@@ -1,4 +1,4 @@
-package example
+package main
 
 import io.circe._
 import io.circe.generic.auto._
@@ -8,7 +8,7 @@ import io.circe.syntax._
 
 // date_iterator
 
-object Hello extends App {
+object Main extends App {
   // This makes all members to be snake_case
   implicit val config: Configuration = Configuration.default
     .withSnakeCaseConstructorNames
