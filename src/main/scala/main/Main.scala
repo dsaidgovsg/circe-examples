@@ -66,6 +66,11 @@ object Main extends App {
   pp("encodedAgeBand4", ageBand4.asJson.spaces2)
   pp("decodedAgeBand4", decode[AgeBand](ageBand4.asJson.spaces2).right.get)
 
+  // Assert all cases
+  AgeBand.values.foreach { ageBand =>
+    assert(ageBand.asJson == Json.fromString(ageBand.entryName))
+  }
+
   // Gender
 
   val gender1 = Gender.withName("male")
@@ -79,6 +84,11 @@ object Main extends App {
   val gender3 = Gender.withName("unknown")
   pp("encodedGender3", gender3.asJson.spaces2)
   pp("decodedGender3", decode[Gender](gender3.asJson.spaces2).right.get)
+
+  // Assert all cases
+  Gender.values.foreach { gender =>
+    assert(gender.asJson == Json.fromString(gender.entryName))
+  }
 
   // Demo
 
