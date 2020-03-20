@@ -5,10 +5,10 @@ import io.circe.generic.extras._
 import circeeg.util.conf._
 
 @ConfiguredJsonCodec
-sealed trait Foo
+sealed trait Other
 
 @ConfiguredJsonCodec
-case class BarVal(valInt: Int, valDbl: Option[Double]) extends Foo
+case class FooVal(valInt: Int, valDbl: Option[Double]) extends Other
 
 @ConfiguredJsonCodec
-case class BazVal(valVec: Vector[String]) extends Foo
+case class BarVal(valVec: Vector[String]) extends Other

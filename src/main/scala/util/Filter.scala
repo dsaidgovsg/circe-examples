@@ -9,7 +9,7 @@ import circeeg.util.conf._
 sealed trait Filter
 
 @ConfiguredJsonCodec
-case class DwellTimeInWindow(
+case class DwellTimeFilter(
   cells: Vector[Int],
   startTime: ZonedDateTime,
   endTime: ZonedDateTime,
