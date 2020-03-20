@@ -5,8 +5,8 @@ import enumeratum._
 
 import circeeg.util.conf._
 
-// DO NOT USE @ConfiguredJsonCodec here because it will override the
-// custom enum naming behavior
+// DO NOT USE @ConfiguredJsonCodec for any of the enums because it will override
+// the custom enum naming behavior
 
 @ConfiguredJsonCodec
 final case class Demo(
