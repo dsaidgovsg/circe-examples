@@ -10,12 +10,12 @@ import java.time.{Duration, ZonedDateTime}
 
 import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
-import circeeg.util.AgeDemo
+import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.conf._
 
 object Main extends App {
-  val withNullPrinter = Printer.spaces2
-  val withoutNullPrinter = Printer.spaces2.copy(dropNullValues = true)
+  val np = Printer.spaces2
+  val dnp = Printer.spaces2.copy(dropNullValues = true)
 
   // Pretty-print in special format
   def pp[T](title: String, v: T) = {
@@ -29,7 +29,7 @@ object Main extends App {
 
   // DwellTimeFilter
 
-  val origDwellTimeFilter: Filter = DwellTimeFilter(
+  val dwellTimeFilter: Filter = DwellTimeFilter(
     cells = Vector(123),
     startTime = ZonedDateTime.parse("2020-01-01T00:00:00+08:00"),
     endTime = ZonedDateTime.parse("2020-01-01T23:59:59+08:00"),
@@ -38,33 +38,64 @@ object Main extends App {
     recurrence = None,
   )
 
-  // origDwellTimeFilter.asJson.spaces2 also works
-  pp("encodedDwellTimeFilterWithNull", withNullPrinter.print(origDwellTimeFilter.asJson))
-  pp("encodedDwellTimeFilterWithoutNull", withoutNullPrinter.print(origDwellTimeFilter.asJson))
-  pp("decodedDwellTimeFilterWithNull", decode[Filter](withNullPrinter.print(origDwellTimeFilter.asJson)).right.get)
-  pp("decodedDwellTimeFilterWithoutNull", decode[Filter](withoutNullPrinter.print(origDwellTimeFilter.asJson)).right.get)
+  // dwellTimeFilter.asJson.spaces2 also works
+  pp("encodedDwellTimeFilterWithNull", np.print(dwellTimeFilter.asJson))
+  pp("encodedDwellTimeFilterWithoutNull", dnp.print(dwellTimeFilter.asJson))
+  pp("decodedDwellTimeFilterWithNull", decode[Filter](np.print(dwellTimeFilter.asJson)).right.get)
+  pp("decodedDwellTimeFilterWithoutNull", decode[Filter](dnp.print(dwellTimeFilter.asJson)).right.get)
 
   //
   // Demo
   //
 
-  // AgeDemo
+  // AgeBand
 
-  val origAgeDemo1 = AgeDemo.withName("<20")
-  pp("encodedAgeDemo1", origAgeDemo1.asJson.spaces2)
-  pp("decodedAgeDemo1", decode[AgeDemo](origAgeDemo1.asJson.spaces2).right.get)
+  val ageBand1 = AgeBand.withName("<20")
+  pp("encodedAgeBand1", ageBand1.asJson.spaces2)
+  pp("decodedAgeBand1", decode[AgeBand](ageBand1.asJson.spaces2).right.get)
 
-  val origAgeDemo2 = AgeDemo.withName("40-44")
-  pp("encodedAgeDemo2", origAgeDemo2.asJson.spaces2)
-  pp("decodedAgeDemo2", decode[AgeDemo](origAgeDemo2.asJson.spaces2).right.get)
+  val ageBand2 = AgeBand.withName("40-44")
+  pp("encodedAgeBand2", ageBand2.asJson.spaces2)
+  pp("decodedAgeBand2", decode[AgeBand](ageBand2.asJson.spaces2).right.get)
 
-  val origAgeDemo3 = AgeDemo.withName(">70")
-  pp("encodedAgeDemo3", origAgeDemo3.asJson.spaces2)
-  pp("decodedAgeDemo3", decode[AgeDemo](origAgeDemo3.asJson.spaces2).right.get)
+  val ageBand3 = AgeBand.withName(">70")
+  pp("encodedAgeBand3", ageBand3.asJson.spaces2)
+  pp("decodedAgeBand3", decode[AgeBand](ageBand3.asJson.spaces2).right.get)
 
-  val origAgeDemo4 = AgeDemo.withName("unknown")
-  pp("encodedAgeDemo4", origAgeDemo4.asJson.spaces2)
-  pp("decodedAgeDemo4", decode[AgeDemo](origAgeDemo4.asJson.spaces2).right.get)
+  val ageBand4 = AgeBand.withName("unknown")
+  pp("encodedAgeBand4", ageBand4.asJson.spaces2)
+  pp("decodedAgeBand4", decode[AgeBand](ageBand4.asJson.spaces2).right.get)
+
+  // Gender
+
+  val gender1 = Gender.withName("male")
+  pp("encodedGender1", gender1.asJson.spaces2)
+  pp("decodedGender1", decode[Gender](gender1.asJson.spaces2).right.get)
+
+  val gender2 = Gender.withName("female")
+  pp("encodedGender2", gender2.asJson.spaces2)
+  pp("decodedGender2", decode[Gender](gender2.asJson.spaces2).right.get)
+
+  val gender3 = Gender.withName("unknown")
+  pp("encodedGender3", gender3.asJson.spaces2)
+  pp("decodedGender3", decode[Gender](gender3.asJson.spaces2).right.get)
+
+  // Demo
+
+  val demo1 = Demo(ages = None, genders = None)
+  pp("encodedDemo1WithNull", np.print(demo1.asJson))
+  pp("encodedDemo1WithoutNull", dnp.print(demo1.asJson))
+  pp("decodedDemo1WithNull", decode[Demo](np.print(demo1.asJson)).right.get)
+  pp("decodedDemo1WithoutNull", decode[Demo](dnp.print(demo1.asJson)).right.get)
+
+  val demo2 = Demo(
+    ages = Some(Set(AgeBand.withName("40-44"), AgeBand.withName("45-49"))),
+    genders = Some(Set(Gender.withName("male"), Gender.withName("female"))),
+  )
+  pp("encodedDemo2WithNull", np.print(demo2.asJson))
+  pp("encodedDemo2WithoutNull", dnp.print(demo2.asJson))
+  pp("decodedDemo2WithNull", decode[Demo](np.print(demo2.asJson)).right.get)
+  pp("decodedDemo2WithoutNull", decode[Demo](dnp.print(demo2.asJson)).right.get)
 
   //
   // Others

@@ -1,5 +1,6 @@
 package circeeg.util
 
+import io.circe.generic.extras._
 import enumeratum._
 
 import circeeg.util.conf._
@@ -7,22 +8,46 @@ import circeeg.util.conf._
 // DO NOT USE @ConfiguredJsonCodec here because it will override the
 // custom enum naming behavior
 
-sealed abstract class AgeDemo(override val entryName: String) extends EnumEntry
+@ConfiguredJsonCodec
+final case class Demo(
+  ages: Option[Set[AgeBand]],
+  genders: Option[Set[Gender]],
+)
 
-case object AgeDemo extends Enum[AgeDemo] with CirceEnum[AgeDemo] {
-  case object UnderTwenty extends AgeDemo("<20")
-  case object TwentyToTwentyFour extends AgeDemo("20-24")
-  case object TwentyFiveToTwentyNine extends AgeDemo("25-29")
-  case object ThirtyToThirtyFour extends AgeDemo("30-34")
-  case object ThirtyFiveToThirtyNine extends AgeDemo("35-39")
-  case object FortyToFortyFour extends AgeDemo("40-44")
-  case object FortyFiveToFortyNine extends AgeDemo("45-49")
-  case object FiftyToFiftyFour extends AgeDemo("50-54")
-  case object FiftyFiveToFiftyNine extends AgeDemo("55-59")
-  case object SixtyToSixtyFour extends AgeDemo("60-64")
-  case object SixtyFiveToSixtyNine extends AgeDemo("65-69")
-  case object AboveSeventy extends AgeDemo(">70")
-  case object AgeNotAvailable extends AgeDemo("unknown")
+//
+// Age band
+//
+
+sealed abstract class AgeBand(override val entryName: String) extends EnumEntry
+
+case object AgeBand extends Enum[AgeBand] with CirceEnum[AgeBand] {
+  case object UnderTwenty extends AgeBand("<20")
+  case object TwentyToTwentyFour extends AgeBand("20-24")
+  case object TwentyFiveToTwentyNine extends AgeBand("25-29")
+  case object ThirtyToThirtyFour extends AgeBand("30-34")
+  case object ThirtyFiveToThirtyNine extends AgeBand("35-39")
+  case object FortyToFortyFour extends AgeBand("40-44")
+  case object FortyFiveToFortyNine extends AgeBand("45-49")
+  case object FiftyToFiftyFour extends AgeBand("50-54")
+  case object FiftyFiveToFiftyNine extends AgeBand("55-59")
+  case object SixtyToSixtyFour extends AgeBand("60-64")
+  case object SixtyFiveToSixtyNine extends AgeBand("65-69")
+  case object AboveSeventy extends AgeBand(">70")
+  case object NotAvailable extends AgeBand("unknown")
+
+  val values = findValues
+}
+
+//
+// Gender
+//
+
+sealed abstract class Gender(override val entryName: String) extends EnumEntry
+
+case object Gender extends Enum[Gender] with CirceEnum[Gender] {
+  case object Male extends Gender("male")
+  case object Female extends Gender("female")
+  case object NotAvailable extends Gender("unknown")
 
   val values = findValues
 }
