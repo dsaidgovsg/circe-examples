@@ -1,6 +1,6 @@
 import Dependencies._
 
-ThisBuild / scalaVersion     := "2.13.1"
+ThisBuild / scalaVersion     := "2.12.8"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "circeeg"
 ThisBuild / organizationName := "circeeg"
@@ -11,9 +11,6 @@ val enumeratumCirceVersion = "1.5.23"
 lazy val root = (project in file("."))
   .settings(
     name := "circe-examples",
-    scalacOptions ++= Seq(
-      "-Ymacro-annotations",
-    ),
     libraryDependencies ++=
       Seq(
         "io.circe" %% "circe-core",
@@ -27,3 +24,7 @@ lazy val root = (project in file("."))
         "com.beachape" %% "enumeratum-circe" % enumeratumCirceVersion
       ),
   )
+
+// Macro paradise
+resolvers += Resolver.sonatypeRepo("releases")
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
