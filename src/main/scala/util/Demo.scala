@@ -1,6 +1,6 @@
 package circeeg.util
 
-import io.circe.generic.extras._
+import io.circe.generic.extras.ConfiguredJsonCodec
 import enumeratum._
 
 import circeeg.util.Conf.custom

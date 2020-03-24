@@ -1,6 +1,6 @@
 package circeeg.util
 
-import io.circe.generic.extras._
+import io.circe.generic.extras.Configuration
 
 object Conf {
   // This makes all members to be snake_case

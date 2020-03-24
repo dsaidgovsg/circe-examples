@@ -1,10 +1,9 @@
 package circeeg.main
 
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.generic.extras._
-import io.circe.parser._
-import io.circe.syntax._
+import io.circe.Json
+import io.circe.parser.decode
+// This is for .asJson, usually imported as io.circe.syntax._
+import io.circe.syntax.EncoderOps
 import io.circe.Printer
 import java.time.{Duration, ZonedDateTime}
 
