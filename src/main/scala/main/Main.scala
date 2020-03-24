@@ -11,7 +11,7 @@ import java.time.{Duration, ZonedDateTime}
 import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
-import circeeg.util.conf._
+import circeeg.util.Conf.custom
 
 object Main extends App {
   val np = Printer.spaces2
@@ -35,14 +35,14 @@ object Main extends App {
     endTime = ZonedDateTime.parse("2020-01-01T23:59:59+08:00"),
     minDwell = Duration.ofHours(1),
     maxDwell = None,
-    recurrence = None,
+    recurrence = None
   )
 
   // dwellTimeFilter.asJson.spaces2 also works
-  pp("encodedDwellTimeFilterWithNull", np.print(dwellTimeFilter.asJson))
-  pp("encodedDwellTimeFilterWithoutNull", dnp.print(dwellTimeFilter.asJson))
-  pp("decodedDwellTimeFilterWithNull", decode[Filter](np.print(dwellTimeFilter.asJson)).right.get)
-  pp("decodedDwellTimeFilterWithoutNull", decode[Filter](dnp.print(dwellTimeFilter.asJson)).right.get)
+  pp("encodedDwellTimeFilterWithNull", np.pretty(dwellTimeFilter.asJson))
+  pp("encodedDwellTimeFilterWithoutNull", dnp.pretty(dwellTimeFilter.asJson))
+  pp("decodedDwellTimeFilterWithNull", decode[Filter](np.pretty(dwellTimeFilter.asJson)).right.get)
+  pp("decodedDwellTimeFilterWithoutNull", decode[Filter](dnp.pretty(dwellTimeFilter.asJson)).right.get)
 
   //
   // Demo
@@ -93,19 +93,19 @@ object Main extends App {
   // Demo
 
   val demo1 = Demo(ages = None, genders = None)
-  pp("encodedDemo1WithNull", np.print(demo1.asJson))
-  pp("encodedDemo1WithoutNull", dnp.print(demo1.asJson))
-  pp("decodedDemo1WithNull", decode[Demo](np.print(demo1.asJson)).right.get)
-  pp("decodedDemo1WithoutNull", decode[Demo](dnp.print(demo1.asJson)).right.get)
+  pp("encodedDemo1WithNull", np.pretty(demo1.asJson))
+  pp("encodedDemo1WithoutNull", dnp.pretty(demo1.asJson))
+  pp("decodedDemo1WithNull", decode[Demo](np.pretty(demo1.asJson)).right.get)
+  pp("decodedDemo1WithoutNull", decode[Demo](dnp.pretty(demo1.asJson)).right.get)
 
   val demo2 = Demo(
     ages = Some(Set(AgeBand.withName("40-44"), AgeBand.withName("45-49"))),
-    genders = Some(Set(Gender.withName("male"), Gender.withName("female"))),
+    genders = Some(Set(Gender.withName("male"), Gender.withName("female")))
   )
-  pp("encodedDemo2WithNull", np.print(demo2.asJson))
-  pp("encodedDemo2WithoutNull", dnp.print(demo2.asJson))
-  pp("decodedDemo2WithNull", decode[Demo](np.print(demo2.asJson)).right.get)
-  pp("decodedDemo2WithoutNull", decode[Demo](dnp.print(demo2.asJson)).right.get)
+  pp("encodedDemo2WithNull", np.pretty(demo2.asJson))
+  pp("encodedDemo2WithoutNull", dnp.pretty(demo2.asJson))
+  pp("decodedDemo2WithNull", decode[Demo](np.pretty(demo2.asJson)).right.get)
+  pp("decodedDemo2WithoutNull", decode[Demo](dnp.pretty(demo2.asJson)).right.get)
 
   //
   // Others

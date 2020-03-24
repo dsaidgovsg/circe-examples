@@ -3,7 +3,7 @@ package circeeg.util
 import io.circe.generic.extras._
 import enumeratum._
 
-import circeeg.util.conf._
+import circeeg.util.Conf.custom
 
 // DO NOT USE @ConfiguredJsonCodec for any of the enums because it will override
 // the custom enum naming behavior
@@ -11,7 +11,7 @@ import circeeg.util.conf._
 @ConfiguredJsonCodec
 final case class Demo(
   ages: Option[Set[AgeBand]],
-  genders: Option[Set[Gender]],
+  genders: Option[Set[Gender]]
 )
 
 //
