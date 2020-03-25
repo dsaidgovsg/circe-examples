@@ -8,7 +8,8 @@ This also uses `enumeratum` with `circe`-integration.
 
 You should only require the `sbt` command.
 
-Simply run `sbt run` and you should see the example output.
+Go to `main` directory, and simply run `sbt run` and you should see the
+example output.
 
 ## What should I take note
 

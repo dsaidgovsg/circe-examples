@@ -1,4 +1,4 @@
-package circeeg.util
+package circeeg.extras
 
 object Func {
   implicit class Func1Extra[I1, O1, O2](f: I1 => O1) {
