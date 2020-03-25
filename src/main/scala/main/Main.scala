@@ -12,6 +12,8 @@ import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
 
+import circeeg.util.{Base, X, Y}
+
 object Main extends App {
   val np = Printer.spaces2
   val dnp = Printer.spaces2.copy(dropNullValues = true)
@@ -21,6 +23,27 @@ object Main extends App {
     val dashes = "-" * title.length
     println(s"\n$title\n$dashes\n$v\n")
   }
+
+  //
+  // Base
+  //
+
+  val x: Base = Base.X(1)
+  val y: Base = Base.Y(1)
+  val z: Base = Base.Z("abc")
+  val a: Base = Base.A(123, List(456, 789), "def")
+
+  pp("x-encode", np.pretty(x.asJson))
+  pp("x-decode", decode[Base](np.pretty(x.asJson)).right.get)
+
+  pp("y-encode", np.pretty(y.asJson))
+  pp("y-decode", decode[Base](np.pretty(y.asJson)).right.get)
+
+  pp("z-encode", np.pretty(z.asJson))
+  pp("z-decode", decode[Base](np.pretty(z.asJson)).right.get)
+
+  pp("a-encode", np.pretty(a.asJson))
+  pp("a-decode", decode[Base](np.pretty(a.asJson)).right.get)
 
   //
   // Filter
