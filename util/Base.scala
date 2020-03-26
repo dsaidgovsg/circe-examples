@@ -4,7 +4,7 @@ import cats.syntax.either._
 import io.circe.generic.extras.ConfiguredJsonCodec
 import io.circe.syntax.EncoderOps  // .asJson needs this
 
-import circeeg.extras.CirceEnumComponent
+import circeeg.extras.CirceEnumVariant
 import circeeg.util.Conf.custom
 
 @ConfiguredJsonCodec
@@ -19,16 +19,16 @@ object Base {
   // JsonKey does not work for ADT case class like this unfortunately
   // but at least we have a second-say on how the enum component here is named
 
-  @CirceEnumComponent
+  @CirceEnumVariant
   final case class X(v: circeeg.util.X) extends Base
 
-  @CirceEnumComponent
+  @CirceEnumVariant
   final case class Y(v: circeeg.util.Y) extends Base
 
-  @CirceEnumComponent
+  @CirceEnumVariant
   final case class Z(v: circeeg.util.Z) extends Base
 
   // A uses arity-3
-  @CirceEnumComponent
+  @CirceEnumVariant
   final case class A(v: circeeg.util.A) extends Base
 }

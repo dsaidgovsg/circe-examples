@@ -5,15 +5,14 @@ import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
-class CirceEnumComponent(
+class CirceEnumVariant(
   encodeOnly: Boolean = false,
   decodeOnly: Boolean = false
 ) extends StaticAnnotation {
-  def macroTransform(annottees: Any*): Any = macro CirceEnumComponentMacros.impl
+  def macroTransform(annottees: Any*): Any = macro CirceEnumVariantMacros.impl
 }
 
-// private[generic] class CirceEnumComponentMacros(val c: whitebox.Context) extends JsonCodecMacros {
-private class CirceEnumComponentMacros(val c: whitebox.Context) {
+private class CirceEnumVariantMacros(val c: whitebox.Context) {
   import c.universe._
 
   private[this] def isFinalCaseClass(clsDef: ClassDef) =
