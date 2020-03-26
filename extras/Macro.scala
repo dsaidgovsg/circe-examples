@@ -6,21 +6,42 @@ import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 import scala.reflect.ClassTag
 
-class CirceEnumDerive[T]() extends StaticAnnotation {
-  def macroTransform(annottees: Any*): Any = macro CirceEnumDeriveMacro.impl
+class CirceEnumDerive[T](base: Class[T]) extends StaticAnnotation {
+  def macroTransform(annottees: Any*): Any = macro CirceEnumDeriveMacro.impl[T]
 }
 
 private class CirceEnumDeriveMacro(val c: whitebox.Context) {
   import c.universe._
 
-  def impl(annottees: Tree*): Tree = {
+  private[this] def changeFirstTermNameToTypeName(t: Tree): Tree =
+    t match {
+      case q"$base.$child" => tq"$base.${child.toTypeName}"
+      case q"$child" => tq"${TypeName(child.toString)}"
+    }
+
+  private[this] val macroName: Tree = {
+    c.prefix.tree match {
+      case Apply(Select(New(name), _), _) => name
+      case _ => c.abort(c.enclosingPosition, "Unexpected macro application")
+    }
+  }
+
+  private[this] val baseTermName: Tree = {
+    c.prefix.tree match {
+      case q"new $macroName($base)" => base
+      case _ => c.abort(c.enclosingPosition, s"Unsupported arguments supplied to @$macroName")
+    }
+  }
+
+  private[this] val baseTypeName: Tree = changeFirstTermNameToTypeName(baseTermName)
+
+  def impl[T](annottees: Tree*): Tree = {
     annottees match {
       case (traitDef @ q"sealed trait $tpname") :: (companionDef: ModuleDef) :: Nil => {
         // println(companionDef)
         // println(showRaw(companionDef))
-
         q"""
-        $traitDef
+        sealed trait $tpname extends $baseTypeName
         $companionDef
         """
       }
@@ -42,7 +63,7 @@ class CirceEnumVariant(
 private class CirceEnumVariantMacro(val c: whitebox.Context) {
   import c.universe._
 
-  private[this] def changeFirstTypeNameToTermName(t: Tree) =
+  private[this] def changeFirstTypeNameToTermName(t: Tree): Tree =
     t match {
       case tq"$base.$child" => q"$base.${child.toTermName}"
       case tq"$child" => q"${TermName(child.toString)}"
