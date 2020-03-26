@@ -1,26 +1,23 @@
 package circeeg.util
 
 import cats.syntax.either._
-import io.circe.{Decoder, Encoder, HCursor, Json}
-import io.circe.generic.extras.{ConfiguredJsonCodec, JsonKey}
-import io.circe.syntax._
-
-import circeeg.util.Conf._
+import io.circe.generic.extras.ConfiguredJsonCodec
+import io.circe.syntax.EncoderOps  // .asJson needs this
 
 import circeeg.extras.CirceEnumComponent
+import circeeg.util.Conf.custom
 
 @ConfiguredJsonCodec
 sealed trait Base
 
 object Base {
-  // To get all the function result mapping with different arities
-  import circeeg.extras.Func._
-
   // The case class (enum component) names below do not actually have to
   // be exactly the same as the ones in Xyz.scala.
   // They are named the same to easily correlate the two
   // The case class name here however DO determine the automatic inferred
   // JSON key name to use when serde-ing.
+  // JsonKey does not work for ADT case class like this unfortunately
+  // but at least we have a second-say on how the enum component here is named
 
   @CirceEnumComponent
   final case class X(v: circeeg.util.X) extends Base

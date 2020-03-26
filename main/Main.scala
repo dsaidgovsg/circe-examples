@@ -7,12 +7,11 @@ import io.circe.syntax.EncoderOps
 import io.circe.Printer
 import java.time.{Duration, ZonedDateTime}
 
+import circeeg.util.Base
 import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
-
-import circeeg.util.Base
 
 object Main extends App {
   val np = Printer.spaces2

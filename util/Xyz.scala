@@ -1,10 +1,10 @@
 package circeeg.util
 
+import java.net.Socket
+
 import io.circe.generic.extras.ConfiguredJsonCodec
 
 import circeeg.util.Conf.custom
-
-import java.net.Socket
 
 // The traits here are just to show that for some reason if you need to the
 // various enum components extend some traits, as long as the trait are just for

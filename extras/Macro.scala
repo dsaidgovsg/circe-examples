@@ -1,9 +1,9 @@
 package circeeg.extras
 
-import scala.reflect.macros.whitebox
-import scala.language.experimental.macros
 import scala.annotation.StaticAnnotation
 import scala.annotation.compileTimeOnly
+import scala.language.experimental.macros
+import scala.reflect.macros.whitebox
 
 class CirceEnumComponent(
   encodeOnly: Boolean = false,
@@ -15,8 +15,6 @@ class CirceEnumComponent(
 // private[generic] class CirceEnumComponentMacros(val c: whitebox.Context) extends JsonCodecMacros {
 private class CirceEnumComponentMacros(val c: whitebox.Context) {
   import c.universe._
-  import io.circe.{Decoder, Encoder, HCursor, Json}
-  import Func._
 
   private[this] def isFinalCaseClass(clsDef: ClassDef) =
     clsDef.mods.hasFlag(Flag.CASE) && clsDef.mods.hasFlag(Flag.FINAL)
@@ -57,15 +55,15 @@ private class CirceEnumComponentMacros(val c: whitebox.Context) {
               q"""
               $clsDef
               object ${classTermName} {
-                def apply = (${fieldTermSelect}.apply _).mapResult(new ${classTypeName}(_))
+                def apply = circeeg.extras.Func.mapResult(${fieldTermSelect}.apply _)(new ${classTypeName}(_))
               }
 
-              implicit val ${encoderTermName}: Encoder[${classTypeName}] = new Encoder[${classTypeName}] {
+              implicit val ${encoderTermName}: io.circe.Encoder[${classTypeName}] = new io.circe.Encoder[${classTypeName}] {
                 final def apply(v: ${classTypeName}) = v.v.asJson
               }
 
-              implicit val ${decoderTermName}: Decoder[${classTypeName}] = new Decoder[${classTypeName}] {
-                final def apply(c: HCursor) = for { v <- c.as[${fieldTypeSelect}] } yield { new ${classTypeName}(v) }
+              implicit val ${decoderTermName}: io.circe.Decoder[${classTypeName}] = new io.circe.Decoder[${classTypeName}] {
+                final def apply(c: io.circe.HCursor) = for { v <- c.as[${fieldTypeSelect}] } yield { new ${classTypeName}(v) }
               }
               """
             }
