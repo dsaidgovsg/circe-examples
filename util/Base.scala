@@ -8,7 +8,7 @@ import circeeg.extras.{CirceEnumDerive, CirceEnumVariant}
 import circeeg.util.Conf.custom
 
 @ConfiguredJsonCodec
-// @CirceEnumDerive(circeeg.util.Useless)
+@CirceEnumDerive[circeeg.util.Useless]
 sealed trait Base
 
 object Base {
