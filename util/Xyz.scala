@@ -4,13 +4,21 @@ import io.circe.generic.extras.ConfiguredJsonCodec
 
 import circeeg.util.Conf.custom
 
+import java.net.Socket
+
 // The traits here are just to show that for some reason if you need to the
 // various enum components extend some traits, as long as the trait are just for
 // methods, it has no impact on the serialization hierarchy and neither do they
 // need to be circe annotated
 
-trait Useless
-trait UselessToo extends Useless
+trait Useless {
+  def foo(): Unit = ()
+}
+
+trait UselessToo extends Useless {
+  // Purposely take in and return unserializable type
+  def bar(x: Array[Socket]): Socket = x(0)
+}
 
 // The following case classes totally do not need the above traits and do not
 // need to derive from any base traits
