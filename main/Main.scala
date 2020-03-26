@@ -12,7 +12,7 @@ import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
 
-import circeeg.util.{Base, X, Y}
+import circeeg.util.Base
 
 object Main extends App {
   val np = Printer.spaces2

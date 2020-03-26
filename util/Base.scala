@@ -2,7 +2,7 @@ package circeeg.util
 
 import cats.syntax.either._
 import io.circe.{Decoder, Encoder, HCursor, Json}
-import io.circe.generic.extras.ConfiguredJsonCodec
+import io.circe.generic.extras.{ConfiguredJsonCodec, JsonKey}
 import io.circe.syntax._
 
 import circeeg.util.Conf._
