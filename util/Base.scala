@@ -4,10 +4,11 @@ import cats.syntax.either._
 import io.circe.generic.extras.ConfiguredJsonCodec
 import io.circe.syntax.EncoderOps  // .asJson needs this
 
-import circeeg.extras.CirceEnumVariant
+import circeeg.extras.{CirceEnumDerive, CirceEnumVariant}
 import circeeg.util.Conf.custom
 
 @ConfiguredJsonCodec
+// @CirceEnumDerive(circeeg.util.Useless)
 sealed trait Base
 
 object Base {
