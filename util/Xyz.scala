@@ -12,7 +12,8 @@ import java.net.Socket
 // need to be circe annotated
 
 trait Useless {
-  def foo(): Unit = ()
+  def foo(): String
+  def id: Int
 }
 
 trait UselessToo extends Useless {
@@ -28,13 +29,25 @@ trait UselessToo extends Useless {
 // works
 
 @ConfiguredJsonCodec
-case class X(v: Int) extends UselessToo
+case class X(v: Int) extends UselessToo {
+  override def foo(): String = "X-foo"
+  override def id: Int = 0
+}
 
 @ConfiguredJsonCodec
-case class Y(v: Int) extends Useless
+case class Y(v: Int) extends Useless {
+  override def foo(): String = "Y-foo"
+  override def id: Int = 1
+}
 
 @ConfiguredJsonCodec
-case class Z(v: String) extends UselessToo
+case class Z(v: String) extends UselessToo {
+  override def foo(): String = "Z-foo"
+  override def id: Int = 2
+}
 
 @ConfiguredJsonCodec
-case class A(x: Int, y: List[Int], z: String) extends UselessToo
+case class A(x: Int, y: List[Int], z: String) extends UselessToo {
+  override def foo(): String = "A-foo"
+  override def id: Int = 3
+}
