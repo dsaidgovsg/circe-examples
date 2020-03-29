@@ -13,8 +13,6 @@ import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
 
-// import circeeg.util.{FooEnum, FooImpl}
-
 object Main extends App {
   val np = Printer.spaces2
   val dnp = Printer.spaces2.copy(dropNullValues = true)
@@ -24,14 +22,6 @@ object Main extends App {
     val dashes = "-" * title.length
     println(s"\n$title\n$dashes\n$v\n")
   }
-
-  // Delegate
-
-  // val fooImpl = FooEnum.Impl(FooImpl(1))
-  // println(fooImpl.method1())
-  // println(fooImpl.method2(""))
-  // println(fooImpl.method3(""))
-  // println(fooImpl.method4("abc", 100))
 
   //
   // Base + Delegate
@@ -73,7 +63,6 @@ object Main extends App {
   pp("a-foo", decodedA.foo)
   pp("a-foo(0)", decodedA.foo(0))
   pp("a-id", decodedA.id)
-
 
   //
   // Filter

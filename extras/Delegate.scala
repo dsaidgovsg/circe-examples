@@ -23,26 +23,10 @@ object delegateMacro {
       }
 
     def typeCheckExpressionOfType(typeTree: Tree): Type = {
-      val termTree = q"val x: $typeTree = ???; x"
+      // We add a enclosing brace to prevent name clashing in this scope
+      val termTree = q"{ val _x: $typeTree = ???; _x }"
       c.typeCheck(termTree).tpe
     }
-
-    // From MacWire ...
-    // def typeCheckExpressionOfType(typeTree: Tree): Type = {
-    //   println(showRaw(typeTree))
-    //   val someValueOfTypeString = reify {
-    //     def x[T](): T = throw new Exception
-    //     x[String]()
-    //   }
-
-    //   val Expr(Block(stats, Apply(TypeApply(someValueFun, _), someTypeArgs))) = someValueOfTypeString
-
-    //   val someValueOfGivenType = Block(stats, Apply(TypeApply(someValueFun, List(typeTree)), someTypeArgs))
-    //   val someValueOfGivenTypeChecked = c.typeCheck(someValueOfGivenType)
-
-    //   // println(showRaw(someValueOfGivenTypeChecked.tpe))
-    //   someValueOfGivenTypeChecked.tpe
-    // }
 
     def computeType(tpt: Tree): Type = {
       if (tpt.tpe != null) {
@@ -105,10 +89,6 @@ object delegateMacro {
             EmptyTree)
         })
 
-        val xxx = q"def foo(x: Int, y: Int): Int = v.foo(x, y)"
-        println(xxx)
-        println(showRaw(xxx))
-        
         val invocationTree = methodSymbol.typeSignature match {
           case NullaryMethodType(_) => Select(Ident(valDef.name), methodSymbol.name)
           case _ =>
@@ -117,16 +97,14 @@ object delegateMacro {
               methodSymbol.paramss.flatMap(_.map(param => Ident(param.name)))) // TODO - multi params list
         } 
 
-        val x = DefDef(Modifiers(),
+        val methodDef = DefDef(Modifiers(),
           methodSymbol.name,
           List(), // TODO - type parameters
           vparamss,
           TypeTree(methodSymbol.returnType),
           invocationTree)
 
-        println(x)
-        println(showRaw(x))
-        x
+        methodDef
       }
 
       ClassDef(mods, name, tparams, Template(parents, self, body ++ newMethods))

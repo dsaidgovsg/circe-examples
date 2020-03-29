@@ -4,7 +4,6 @@ import scala.annotation.StaticAnnotation
 import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
-import scala.reflect.ClassTag
 
 class CirceEnumVariant(
   encodeOnly: Boolean = false,
@@ -22,49 +21,10 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
       case tq"$child" => q"${TermName(child.toString)}"
     }
 
-  private[this] def typeCheckExpressionOfType(typeTree: Tree): Type = {
-    // println(showRaw(typeTree))
-    val tpe = c.typeCheck(changeFirstTypeNameToTermName(typeTree)).tpe
-    // println(showRaw(tpe))
-    tpe
-    // val someValueOfTypeStringX = reify {
-    //   def x[T](): T = throw new Exception
-    //   x[String]()
-    // }
-
-    // println(showRaw(someValueOfTypeStringX))
-
-    // val someValueOfTypeString = q"""
-    // {
-    //   def x[T](): T = throw new Exception
-    //   x[String]()
-    // }
-    // """
-
-    // println(showRaw(someValueOfTypeString))
-
-    // val Expr(Block(stats, Apply(TypeApply(someValueFun, _), someTypeArgs))) = someValueOfTypeString
-    // val someValueOfGivenType = Block(stats, Apply(TypeApply(someValueFun, List(typeTree)), someTypeArgs))
-    // val someValueOfGivenType = someValueOfTypeString
-    // typeTree.tpe
-
-    // val someValueOfGivenTypeChecked = c.typeCheck(someValueOfGivenType)
-    // someValueOfGivenTypeChecked.tpe
-  }
+  private[this] def typeCheckExpressionOfType(typeTree: Tree): Type =
+    c.typeCheck(changeFirstTypeNameToTermName(typeTree)).tpe
 
   private[this] def computeType(tpt: Tree): Type = {
-    // println(showRaw(tpt))
-    // val x = c.Type(tpt)
-    // println(x)
-    // x.tpe
-    // println(showRaw(tpt))
-    // val x = c.universe.TypeName(tpt.toString)
-    // Type(x)
-    // Type(tpt)
-    // println(tpt.isType)
-    // println(tpt.tpe)
-    // tpt.tpe
-
     val calculatedType = c.typeCheck(tpt.duplicate, silent = true, withMacrosDisabled = true).tpe
     val resultType = if (tpt.tpe == null) calculatedType else tpt.tpe
 
@@ -73,22 +33,6 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
     } else {
       resultType
     }
-
-    // if (tpt.tpe != null) {
-    //   tpt.tpe
-    // } else {
-    //   val calculatedType = c.typeCheck(tpt.duplicate, silent = true, withMacrosDisabled = true).tpe
-    //   val result = if (tpt.tpe == null) calculatedType else tpt.tpe
-
-    //   println(result)
-    //   result
-
-    //   // if (result == NoType) {
-    //   //   typeCheckExpressionOfType(tpt)
-    //   // } else {
-    //   //   result
-    //   // }
-    // }
   }
 
   def impl(annottees: Tree*): Tree = {
@@ -118,9 +62,6 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         // Changing the TypeName to TermName gives us the companion object
         val fieldTermSelect = changeFirstTypeNameToTermName(fieldTypeSelect)
 
-        // val decls = computeType(field.tpt).decls
-        // println(showRaw(decls))
-
         q"""
         $clsDef
 
@@ -143,50 +84,3 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
     }
   }
 }
-
-// class CirceEnumDerive[T](base: Class[T]) extends StaticAnnotation {
-//   def macroTransform(annottees: Any*): Any = macro CirceEnumDeriveMacro.impl[T]
-// }
-
-// private class CirceEnumDeriveMacro(val c: whitebox.Context) {
-//   import c.universe._
-
-//   private[this] def changeFirstTermNameToTypeName(t: Tree): Tree =
-//     t match {
-//       case q"$base.$child" => tq"$base.${child.toTypeName}"
-//       case q"$child" => tq"${TypeName(child.toString)}"
-//     }
-
-//   private[this] val macroName: Tree = {
-//     c.prefix.tree match {
-//       case Apply(Select(New(name), _), _) => name
-//       case _ => c.abort(c.enclosingPosition, "Unexpected macro application")
-//     }
-//   }
-
-//   private[this] val baseTermName: Tree = {
-//     c.prefix.tree match {
-//       case q"new $macroName($base)" => base
-//       case _ => c.abort(c.enclosingPosition, s"Unsupported arguments supplied to @$macroName")
-//     }
-//   }
-
-//   private[this] val baseTypeName: Tree = changeFirstTermNameToTypeName(baseTermName)
-
-//   def impl[T](annottees: Tree*): Tree = {
-//     annottees match {
-//       case (traitDef @ q"sealed trait $tpname") :: (companionDef: ModuleDef) :: Nil => {
-//         // println(companionDef)
-//         // println(showRaw(companionDef))
-//         q"""
-//         sealed trait $tpname extends $baseTypeName
-//         $companionDef
-//         """
-//       }
-
-//       case _ => c.abort(
-//         c.enclosingPosition,
-//         "Invalid annotation target: must be a sealed trait not extending other traits, and with companion object")
-//     }
-//   }
-// }

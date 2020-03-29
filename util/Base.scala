@@ -7,34 +7,6 @@ import io.circe.syntax.EncoderOps  // .asJson needs this
 import circeeg.extras.{CirceEnumVariant, delegate}
 import circeeg.util.Conf.custom
 
-// trait FooBase {
-//   def method1(): String
-//   def method2(p1: String): Long
-//   def method3(p1: String): Int
-//   def method4(p1: String, p2: Long): String
-// }
-
-// @ConfiguredJsonCodec
-// case class FooImpl(x: Int) extends FooBase {
-//   override def method1() = "m1"
-//   override def method2(p1: String) = 42L
-//   override def method3(p1: String) = p1.length()
-//   override def method4(p1: String, p2: Long) = s"ok $p1 $p2"
-// }
-
-// @ConfiguredJsonCodec
-// sealed trait FooEnum extends FooBase
-
-// // Putting the @delegate while wrapping the class in object
-// // will cause a macro fatal error
-// // Likely due to Scala macro bugs
-// object FooEnum {
-//   @ConfiguredJsonCodec
-//   final case class Impl(@delegate v: FooImpl) extends FooEnum
-// }
-
-// object FooEnum
-
 @ConfiguredJsonCodec
 sealed trait Base extends Useless
 
@@ -60,5 +32,3 @@ object Base {
   @CirceEnumVariant
   final case class A(@delegate v: circeeg.util.A) extends Base
 }
-
-// object Base
