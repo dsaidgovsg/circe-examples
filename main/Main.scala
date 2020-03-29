@@ -13,6 +13,8 @@ import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
 
+// import circeeg.util.{FooEnum, FooImpl}
+
 object Main extends App {
   val np = Printer.spaces2
   val dnp = Printer.spaces2.copy(dropNullValues = true)
@@ -23,8 +25,16 @@ object Main extends App {
     println(s"\n$title\n$dashes\n$v\n")
   }
 
+  // Delegate
+
+  // val fooImpl = FooEnum.Impl(FooImpl(1))
+  // println(fooImpl.method1())
+  // println(fooImpl.method2(""))
+  // println(fooImpl.method3(""))
+  // println(fooImpl.method4("abc", 100))
+
   //
-  // Base
+  // Base + Delegate
   //
 
   val x: Base = Base.X(1)
@@ -32,17 +42,38 @@ object Main extends App {
   val z: Base = Base.Z("abc")
   val a: Base = Base.A(123, List(456, 789), "def")
 
-  pp("x-encode", np.pretty(x.asJson))
-  pp("x-decode", decode[Base](np.pretty(x.asJson)).right.get)
+  val encodedX = np.pretty(x.asJson)
+  val decodedX = decode[Base](encodedX).right.get
+  pp("x-encode", encodedX)
+  pp("x-decode", decodedX)
+  pp("x-foo", decodedX.foo)
+  pp("x-foo(0)", decodedX.foo(0))
+  pp("x-id", decodedX.id)
 
-  pp("y-encode", np.pretty(y.asJson))
-  pp("y-decode", decode[Base](np.pretty(y.asJson)).right.get)
+  val encodedY = np.pretty(y.asJson)
+  val decodedY = decode[Base](encodedY).right.get
+  pp("y-encode", encodedY)
+  pp("y-decode", decodedY)
+  pp("y-foo", decodedY.foo)
+  pp("y-foo(0)", decodedY.foo(0))
+  pp("y-id", decodedY.id)
 
-  pp("z-encode", np.pretty(z.asJson))
-  pp("z-decode", decode[Base](np.pretty(z.asJson)).right.get)
+  val encodedZ = np.pretty(z.asJson)
+  val decodedZ = decode[Base](encodedZ).right.get
+  pp("z-encode", encodedZ)
+  pp("z-decode", decodedZ)
+  pp("z-foo", decodedZ.foo)
+  pp("z-foo(0)", decodedZ.foo(0))
+  pp("z-id", decodedZ.id)
 
-  pp("a-encode", np.pretty(a.asJson))
-  pp("a-decode", decode[Base](np.pretty(a.asJson)).right.get)
+  val encodedA = np.pretty(a.asJson)
+  val decodedA = decode[Base](encodedA).right.get
+  pp("a-encode", encodedA)
+  pp("a-decode", decodedA)
+  pp("a-foo", decodedA.foo)
+  pp("a-foo(0)", decodedA.foo(0))
+  pp("a-id", decodedA.id)
+
 
   //
   // Filter

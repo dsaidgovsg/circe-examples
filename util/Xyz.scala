@@ -13,6 +13,9 @@ import circeeg.util.Conf.custom
 
 trait Useless {
   def foo(): String
+  def foo(x: Int): Int
+  // TODO - multi params list (https://www.notion.so/542152da398846078c06a8e0301756fb?v=e1a9ffb6299249a2918d753c4760ed6c&p=1c9d4a2a4740499dbed0fb7e3a5ff066)
+  // def foo(x: Int)(y: Int): Int
   def id: Int
 }
 
@@ -31,23 +34,31 @@ trait UselessToo extends Useless {
 @ConfiguredJsonCodec
 case class X(v: Int) extends UselessToo {
   override def foo(): String = "X-foo"
+  override def foo(x: Int): Int = id + x
+  // override def foo(x: Int)(y: Int): Int = foo(x) + y
   override def id: Int = 0
 }
 
 @ConfiguredJsonCodec
 case class Y(v: Int) extends Useless {
   override def foo(): String = "Y-foo"
+  override def foo(x: Int): Int = id + x
+  // override def foo(x: Int)(y: Int): Int = foo(x) + y
   override def id: Int = 1
 }
 
 @ConfiguredJsonCodec
 case class Z(v: String) extends UselessToo {
   override def foo(): String = "Z-foo"
+  override def foo(x: Int): Int = id + x
+  // override def foo(x: Int)(y: Int): Int = foo(x) + y
   override def id: Int = 2
 }
 
 @ConfiguredJsonCodec
 case class A(x: Int, y: List[Int], z: String) extends UselessToo {
   override def foo(): String = "A-foo"
+  override def foo(x: Int): Int = id + x
+  // override def foo(x: Int)(y: Int): Int = foo(x) + y
   override def id: Int = 3
 }
