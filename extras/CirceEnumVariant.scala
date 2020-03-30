@@ -5,15 +5,28 @@ import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
-class CirceEnumVariant(
-  encodeOnly: Boolean = false,
-  decodeOnly: Boolean = false
-) extends StaticAnnotation {
+class CirceEnumVariant(case_class_fwd: Boolean = true) extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro CirceEnumVariantMacro.impl
 }
 
 private class CirceEnumVariantMacro(val c: whitebox.Context) {
   import c.universe._
+
+  private[this] val macroName: Tree = {
+    c.prefix.tree match {
+      case Apply(Select(New(name), _), _) => name
+      case _ => c.abort(c.enclosingPosition, "Unexpected macro application")
+    }
+  }
+
+  private[this] val caseClassForwarding: Boolean = {
+    c.prefix.tree match {
+      case q"new ${`macroName`}()" => true
+      case q"new ${`macroName`}(case_class_fwd = true)" => true
+      case q"new ${`macroName`}(case_class_fwd = false)" => false
+      case _ => c.abort(c.enclosingPosition, s"Unsupported arguments supplied to @$macroName")
+    }
+  }
 
   private[this] def changeFirstTypeNameToTermName(t: Tree): Tree =
     t match {
@@ -62,21 +75,27 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         // Changing the TypeName to TermName gives us the companion object
         val fieldTermSelect = changeFirstTypeNameToTermName(fieldTypeSelect)
 
-        q"""
-        $clsDef
+        val q"..$codecVals" = q"""
+          implicit val $encoderTermName: io.circe.Encoder[$classTypeName] = new io.circe.Encoder[$classTypeName] {
+            final def apply(v: $classTypeName) = v.$fieldName.asJson
+          }
 
-        object $classTermName {
-          def apply = circeeg.extras.Func.mapResult($fieldTermSelect.apply _)(new $classTypeName(_))
-        }
+          implicit val $decoderTermName: io.circe.Decoder[$classTypeName] = new io.circe.Decoder[$classTypeName] {
+            final def apply(c: io.circe.HCursor) = for { v <- c.as[$fieldTypeSelect] } yield { new $classTypeName(v) }
+          }
+          """
 
-        implicit val $encoderTermName: io.circe.Encoder[$classTypeName] = new io.circe.Encoder[$classTypeName] {
-          final def apply(v: $classTypeName) = v.$fieldName.asJson
-        }
+        caseClassForwarding match {
+          case true =>
+            q"""
+            $clsDef; ..$codecVals
 
-        implicit val $decoderTermName: io.circe.Decoder[$classTypeName] = new io.circe.Decoder[$classTypeName] {
-          final def apply(c: io.circe.HCursor) = for { v <- c.as[$fieldTypeSelect] } yield { new $classTypeName(v) }
+            object $classTermName {
+              def apply = circeeg.extras.Func.mapResult($fieldTermSelect.apply _)(new $classTypeName(_))
+            }
+            """
+          case false => q"$clsDef; ..$codecVals"
         }
-        """
       }
       case _ => c.abort(
         c.enclosingPosition,

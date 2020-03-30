@@ -31,6 +31,7 @@ object Main extends App {
   val y: Base = Base.Y(1)
   val z: Base = Base.Z("abc")
   val a: Base = Base.A(123, List(456, 789), "def")
+  val b: Base = Base.B("Hello!")
 
   val encodedX = np.pretty(x.asJson)
   val decodedX = decode[Base](encodedX).right.get
@@ -63,6 +64,14 @@ object Main extends App {
   pp("a-foo", decodedA.foo)
   pp("a-foo(0)", decodedA.foo(0))
   pp("a-id", decodedA.id)
+
+  val encodedB = np.pretty(b.asJson)
+  val decodedB = decode[Base](encodedB).right.get
+  pp("b-encode", encodedB)
+  pp("b-decode", decodedB)
+  pp("b-foo", decodedB.foo)
+  pp("b-foo(0)", decodedB.foo(0))
+  pp("b-id", decodedB.id)
 
   //
   // Filter

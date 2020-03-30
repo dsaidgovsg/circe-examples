@@ -31,4 +31,11 @@ object Base {
   // A uses arity-3
   @CirceEnumVariant
   final case class A(@delegate v: circeeg.util.A) extends Base
+
+  @CirceEnumVariant(case_class_fwd = false)
+  final case class B(v: String) extends Base {
+    def foo(): String = v
+    def foo(x: Int): Int = id + 1
+    def id: Int = 777
+  }
 }
