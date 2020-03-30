@@ -1,5 +1,6 @@
 package circeeg.util
 
+import cats.data.NonEmptyList
 import cats.syntax.either._
 import io.circe.generic.extras.ConfiguredJsonCodec
 import io.circe.syntax.EncoderOps  // .asJson needs this
@@ -37,5 +38,12 @@ object Base {
     def foo(): String = v
     def foo(x: Int): Int = id + 1
     def id: Int = 777
+  }
+
+  @CirceEnumVariant(case_class_fwd = false)
+  final case class C(v: NonEmptyList[Int]) extends Base {
+    def foo(): String = "NonEmptyList"
+    def foo(x: Int): Int = id + 1
+    def id: Int = 88
   }
 }

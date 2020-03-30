@@ -1,5 +1,6 @@
 package circeeg.main
 
+import cats.data.NonEmptyList
 import io.circe.Json
 import io.circe.parser.decode
 // This is for .asJson, usually imported as io.circe.syntax._
@@ -32,6 +33,7 @@ object Main extends App {
   val z: Base = Base.Z("abc")
   val a: Base = Base.A(123, List(456, 789), "def")
   val b: Base = Base.B("Hello!")
+  val c: Base = Base.C(NonEmptyList.one(123))
 
   val encodedX = np.pretty(x.asJson)
   val decodedX = decode[Base](encodedX).right.get
@@ -72,6 +74,14 @@ object Main extends App {
   pp("b-foo", decodedB.foo)
   pp("b-foo(0)", decodedB.foo(0))
   pp("b-id", decodedB.id)
+
+  val encodedC = np.pretty(c.asJson)
+  val decodedC = decode[Base](encodedC).right.get
+  pp("c-encode", encodedC)
+  pp("c-decode", decodedC)
+  pp("c-foo", decodedC.foo)
+  pp("c-foo(0)", decodedC.foo(0))
+  pp("c-id", decodedC.id)
 
   //
   // Filter
