@@ -1,28 +1,39 @@
 import Dependencies._
 
-ThisBuild / scalaVersion     := "2.11.8"
-ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "circeeg"
-ThisBuild / organizationName := "circeeg"
-
 val circeVersion = "0.12.0-M3"
 val enumeratumCirceVersion = "1.5.23"
 
-lazy val root = (project in file("."))
+val commonSettings = Seq(
+  scalaVersion := "2.11.8",
+  version := "0.1.0-SNAPSHOT",
+  organization := "circeeg",
+  organizationName := "circeeg",
+  libraryDependencies ++=
+    Seq(
+      "io.circe" %% "circe-core",
+      "io.circe" %% "circe-generic",
+      "io.circe" %% "circe-parser",
+      "io.circe" %% "circe-generic-extras",
+    ).map(_ % circeVersion) ++
+    Seq(
+      "com.beachape" %% "enumeratum-circe" % enumeratumCirceVersion
+    )
+)
+
+lazy val extras = (project in file("extras"))
   .settings(
-    name := "circe-examples",
-    libraryDependencies ++=
-      Seq(
-        "io.circe" %% "circe-core",
-        "io.circe" %% "circe-generic",
-        "io.circe" %% "circe-parser",
-        "io.circe" %% "circe-generic-extras",
-      ).map(_ % circeVersion) ++
-      Seq(
-        "com.beachape" %% "enumeratum-circe" % enumeratumCirceVersion
-      ),
+    commonSettings
   )
 
-// Macro paradise
-resolvers += Resolver.sonatypeRepo("releases")
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+lazy val util = (project in file("util")).dependsOn(extras)
+  .settings(
+    commonSettings
+  )
+
+lazy val main = (project in file("main")).dependsOn(util)
+  .settings(
+    commonSettings
+  )
+
+lazy val root = (project in file("."))
+  .aggregate(main)

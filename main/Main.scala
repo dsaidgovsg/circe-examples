@@ -1,5 +1,6 @@
 package circeeg.main
 
+import cats.data.NonEmptyList
 import io.circe.Json
 import io.circe.parser.decode
 // This is for .asJson, usually imported as io.circe.syntax._
@@ -7,12 +8,11 @@ import io.circe.syntax.EncoderOps
 import io.circe.Printer
 import java.time.{Duration, ZonedDateTime}
 
+import circeeg.util.Base
 import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
-
-import circeeg.util.{Base, X, Y}
 
 object Main extends App {
   val np = Printer.spaces2
@@ -25,25 +25,63 @@ object Main extends App {
   }
 
   //
-  // Base
+  // Base + Delegate
   //
 
   val x: Base = Base.X(1)
   val y: Base = Base.Y(1)
   val z: Base = Base.Z("abc")
   val a: Base = Base.A(123, List(456, 789), "def")
+  val b: Base = Base.B("Hello!")
+  val c: Base = Base.C(NonEmptyList.one(123))
 
-  pp("x-encode", np.pretty(x.asJson))
-  pp("x-decode", decode[Base](np.pretty(x.asJson)).right.get)
+  val encodedX = np.pretty(x.asJson)
+  val decodedX = decode[Base](encodedX).right.get
+  pp("x-encode", encodedX)
+  pp("x-decode", decodedX)
+  pp("x-foo", decodedX.foo)
+  pp("x-foo(0)", decodedX.foo(0))
+  pp("x-id", decodedX.id)
 
-  pp("y-encode", np.pretty(y.asJson))
-  pp("y-decode", decode[Base](np.pretty(y.asJson)).right.get)
+  val encodedY = np.pretty(y.asJson)
+  val decodedY = decode[Base](encodedY).right.get
+  pp("y-encode", encodedY)
+  pp("y-decode", decodedY)
+  pp("y-foo", decodedY.foo)
+  pp("y-foo(0)", decodedY.foo(0))
+  pp("y-id", decodedY.id)
 
-  pp("z-encode", np.pretty(z.asJson))
-  pp("z-decode", decode[Base](np.pretty(z.asJson)).right.get)
+  val encodedZ = np.pretty(z.asJson)
+  val decodedZ = decode[Base](encodedZ).right.get
+  pp("z-encode", encodedZ)
+  pp("z-decode", decodedZ)
+  pp("z-foo", decodedZ.foo)
+  pp("z-foo(0)", decodedZ.foo(0))
+  pp("z-id", decodedZ.id)
 
-  pp("a-encode", np.pretty(a.asJson))
-  pp("a-decode", decode[Base](np.pretty(a.asJson)).right.get)
+  val encodedA = np.pretty(a.asJson)
+  val decodedA = decode[Base](encodedA).right.get
+  pp("a-encode", encodedA)
+  pp("a-decode", decodedA)
+  pp("a-foo", decodedA.foo)
+  pp("a-foo(0)", decodedA.foo(0))
+  pp("a-id", decodedA.id)
+
+  val encodedB = np.pretty(b.asJson)
+  val decodedB = decode[Base](encodedB).right.get
+  pp("b-encode", encodedB)
+  pp("b-decode", decodedB)
+  pp("b-foo", decodedB.foo)
+  pp("b-foo(0)", decodedB.foo(0))
+  pp("b-id", decodedB.id)
+
+  val encodedC = np.pretty(c.asJson)
+  val decodedC = decode[Base](encodedC).right.get
+  pp("c-encode", encodedC)
+  pp("c-decode", decodedC)
+  pp("c-foo", decodedC.foo)
+  pp("c-foo(0)", decodedC.foo(0))
+  pp("c-id", decodedC.id)
 
   //
   // Filter
