@@ -35,7 +35,7 @@ object Base {
 
   @CirceEnumVariant(case_class_fwd = false)
   final case class B(v: String) extends Base {
-    def foo(): String = v
+    def foo(): String = "abc"
     def foo(x: Int): Int = id + 1
     def id: Int = 777
   }

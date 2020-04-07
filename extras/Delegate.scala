@@ -23,23 +23,14 @@ object delegateMacro {
       }
 
     def typeCheckExpressionOfType(typeTree: Tree): Type = {
-      // We add a enclosing brace to prevent name clashing in this scope
-      val termTree = q"{ val _x: $typeTree = ???; _x }"
-      c.typeCheck(termTree).tpe
+      c.typecheck(tree = typeTree, mode = c.TYPEmode).tpe
     }
 
     def computeType(tpt: Tree): Type = {
       if (tpt.tpe != null) {
         tpt.tpe
       } else {
-        val calculatedType = c.typeCheck(tpt.duplicate, silent = true, withMacrosDisabled = true).tpe
-        val result = if (tpt.tpe == null) calculatedType else tpt.tpe
-
-        if (result == NoType) {
-          typeCheckExpressionOfType(tpt)
-        } else {
-          result
-        }
+        typeCheckExpressionOfType(tpt)
       }
     }
 
