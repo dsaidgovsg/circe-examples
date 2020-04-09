@@ -12,11 +12,11 @@ val commonSettings = Seq(
     Seq(
       "io.circe" %% "circe-core",
       "io.circe" %% "circe-generic",
-      "io.circe" %% "circe-parser",
       "io.circe" %% "circe-generic-extras",
+      "io.circe" %% "circe-parser",
     ).map(_ % circeVersion) ++
     Seq(
-      "com.beachape" %% "enumeratum-circe" % enumeratumCirceVersion
+      "com.beachape" %% "enumeratum-circe" % enumeratumCirceVersion,
     )
 )
 
