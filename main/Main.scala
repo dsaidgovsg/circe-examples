@@ -13,6 +13,7 @@ import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
+import circeeg.util.Sorl
 
 object Main extends App {
   val np = Printer.spaces2
@@ -23,6 +24,30 @@ object Main extends App {
     val dashes = "-" * title.length
     println(s"\n$title\n$dashes\n$v\n")
   }
+
+  //
+  // Custom single element or list of element
+  //
+
+  val raw1 = "\"Hello\""
+  val sorl1 = decode[Sorl[String]](raw1).right.get
+  pp("Single string", s"${raw1} => ${sorl1} => ${sorl1.asJson}")
+
+  val raw2 = "[123]"
+  val sorl2 = decode[Sorl[Int]](raw2).right.get
+  pp("Array of single Int", s"${raw2} => ${sorl2} => ${sorl2.asJson}")
+
+  val raw3 = "{\"abc\": 1, \"def\": 2}"
+  val sorl3 = decode[Sorl[Map[String, Int]]](raw3).right.get
+  pp("Single Map[String, Int]", s"${raw3} => ${sorl3} => ${sorl3.asJson.noSpaces}")
+
+  val raw4 = "[123, 456]"
+  val sorl4 = decode[Sorl[List[Int]]](raw4).right.get
+  pp("Single List[Int]", s"${raw4} => ${sorl4} => ${sorl4.asJson.noSpaces}")
+
+  val raw5 = "[[\"Hello\", \"How are you\"], [], [\"World\"]]"
+  val sorl5 = decode[Sorl[List[String]]](raw5).right.get
+  pp("Array of multiple Strings", s"${raw5} => ${sorl5} => ${sorl5.asJson.noSpaces}")
 
   //
   // Base + Delegate
