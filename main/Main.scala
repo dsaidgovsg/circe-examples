@@ -13,6 +13,7 @@ import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
+import circeeg.util.NoneDefault._
 import circeeg.util.Sorl
 
 object Main extends App {
@@ -31,11 +32,11 @@ object Main extends App {
 
   val raw1 = "\"Hello\""
   val sorl1 = decode[Sorl[String]](raw1).right.get
-  pp("Single string", s"${raw1} => ${sorl1} => ${sorl1.asJson}")
+  pp("Single string", s"${raw1} => ${sorl1} => ${sorl1.asJson.noSpaces}")
 
   val raw2 = "[123]"
   val sorl2 = decode[Sorl[Int]](raw2).right.get
-  pp("Array of single Int", s"${raw2} => ${sorl2} => ${sorl2.asJson}")
+  pp("Array of single Int", s"${raw2} => ${sorl2} => ${sorl2.asJson.noSpaces}")
 
   val raw3 = "{\"abc\": 1, \"def\": 2}"
   val sorl3 = decode[Sorl[Map[String, Int]]](raw3).right.get
@@ -48,6 +49,22 @@ object Main extends App {
   val raw5 = "[[\"Hello\", \"How are you\"], [], [\"World\"]]"
   val sorl5 = decode[Sorl[List[String]]](raw5).right.get
   pp("Array of multiple Strings", s"${raw5} => ${sorl5} => ${sorl5.asJson.noSpaces}")
+
+  //
+  // Sorl with Option interaction
+  //
+
+  val oraw1 = "null"
+  val osorl1 = decode[Option[Sorl[String]]](oraw1).right.get.noneToDefault
+  pp("Null none-to-default", s"${oraw1} => ${osorl1} => ${osorl1.asJson.noSpaces}")
+
+  val oraw2 = "\"hello\""
+  val osorl2 = decode[Option[Sorl[String]]](oraw2).right.get.noneToDefault
+  pp("Single value none-to-default", s"${oraw2} => ${osorl2} => ${osorl2.asJson.noSpaces}")
+
+  val oraw3 = "[\"hello\", \"world\"]"
+  val osorl3 = decode[Option[Sorl[String]]](oraw3).right.get.noneToDefault
+  pp("Multiple values none-to-default", s"${oraw3} => ${osorl3} => ${osorl3.asJson.noSpaces}")
 
   //
   // Base + Delegate

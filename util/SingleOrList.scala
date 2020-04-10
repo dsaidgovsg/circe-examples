@@ -24,4 +24,8 @@ object Sorl {
         .right.map(Sorl(_))  // Try single T first
         .left.flatMap(_ => v.as[List[T]].right.map(Sorl(_)))  // Try List[T] last
   }
+
+  implicit def defaultSorl[A]: Default[Sorl[A]] = new Default[Sorl[A]] {
+    def default: Sorl[A] = Sorl()
+  }
 }
