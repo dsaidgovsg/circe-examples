@@ -1,12 +1,14 @@
 package circeeg.util
 
 import io.circe.{Decoder, Encoder, HCursor, Json}
-import io.circe.syntax.EncoderOps
 import scala.util.{Left, Right}
 
 case class Sorl[T](val toList: List[T])
 
 object Sorl {
+  import cats.syntax.either._
+  import io.circe.syntax._
+
   final def apply[T](vs: T*): Sorl[T] = Sorl[T](List(vs: _*))
 
   implicit def sorlEncoder[T: Encoder]: Encoder[Sorl[T]] = new Encoder[Sorl[T]] {

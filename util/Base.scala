@@ -3,7 +3,6 @@ package circeeg.util
 import cats.data.NonEmptyList
 import cats.syntax.either._
 import io.circe.generic.extras.ConfiguredJsonCodec
-import io.circe.syntax.EncoderOps  // .asJson needs this
 
 import circeeg.extras.{CirceEnumVariant, delegate}
 import circeeg.util.Conf.custom

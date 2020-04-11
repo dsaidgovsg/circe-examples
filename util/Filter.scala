@@ -4,7 +4,7 @@ import io.circe.generic.JsonCodec
 import io.circe.generic.extras.ConfiguredJsonCodec
 import java.time.{Duration, ZonedDateTime}
 
-import circeeg.util.Conf._
+import circeeg.util.Conf.custom
 
 @ConfiguredJsonCodec
 sealed trait Filter
