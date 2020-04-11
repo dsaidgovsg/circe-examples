@@ -13,6 +13,7 @@ import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
+import circeeg.util.ExprEnum
 import circeeg.util.NoneDefault._
 import circeeg.util.Sorl
 
@@ -24,6 +25,28 @@ object Main extends App {
   def pp[T](title: String, v: T) = {
     val dashes = "-" * title.length
     println(s"\n$title\n$dashes\n$v\n")
+  }
+
+  //
+  // Expr
+  //
+
+  {
+    import ExprEnum._
+
+    val expr1: ExprEnum = Lit(111)
+    val exprEncoded1 = expr1.asJson.noSpaces
+    pp("Expr encoded 1", exprEncoded1)
+    val exprDecoded1 = decode[ExprEnum](exprEncoded1).right.get
+    pp("Expr decoded 1", exprDecoded1)
+    pp("Expr eval 1", exprDecoded1.eval)
+
+    val expr2: ExprEnum = Add(Seq(Lit(111), Add(Seq(Lit(111), Lit(222)))))
+    val exprEncoded2 = expr2.asJson.noSpaces
+    pp("Expr encoded 2", exprEncoded2)
+    val exprDecoded2 = decode[ExprEnum](exprEncoded2).right.get
+    pp("Expr decoded 2", exprDecoded2)
+    pp("Expr eval 2", exprDecoded2.eval)
   }
 
   //

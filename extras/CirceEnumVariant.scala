@@ -50,7 +50,7 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
 
   def impl(annottees: Tree*): Tree = {
     annottees match {
-      case (clsDef @ q"$mods class $className(..$fields) extends ..$parents { ..$members }") :: _ if fields.length == 1 => {
+      case (clsDef @ q"$mods class $className(..$fields) extends { ..$earlydefns } with ..$parents { $self => ..$stats }") :: _ if fields.length == 1 => {
         val classTypeName = className
         val classTermName = classTypeName.toTermName
         val classTypeStr = classTypeName.decodedName.toString
@@ -75,6 +75,11 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         // Changing the TypeName to TermName gives us the companion object
         val fieldTermSelect = changeFirstTypeNameToTermName(fieldTypeSelect)
 
+        val q"..$imports" = q"""
+          import cats.syntax.either._
+          import io.circe.syntax._
+          """
+
         val q"..$codecVals" = q"""
           implicit val $encoderTermName: io.circe.Encoder[$classTypeName] = new io.circe.Encoder[$classTypeName] {
             final def apply(v: $classTypeName) = v.$fieldName.asJson
@@ -88,13 +93,13 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         caseClassForwarding match {
           case true =>
             q"""
-            $clsDef; ..$codecVals
+            ..$imports; $clsDef; ..$codecVals
 
             object $classTermName {
               def apply = circeeg.extras.Func.mapResult($fieldTermSelect.apply _)(new $classTypeName(_))
             }
             """
-          case false => q"$clsDef; ..$codecVals"
+          case false => q"..$imports; $clsDef; ..$codecVals"
         }
       }
       case _ => c.abort(
