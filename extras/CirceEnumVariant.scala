@@ -46,34 +46,33 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
     }
   }
 
-  // private[this] def extractCtor(param: ValDef, classTermName: TermName) = {
-  private[this] def extractCtor(param: ValDef, innerTerm: Tree, classTypeName: TypeName) = {
+  private[this] def extractCtor(target: ValDef, innerCaseClass: Tree, classTypeName: TypeName) = {
     // We assume only one constructor (i.e. default apply method for companion object)
-    val ctor = computeType(param.tpt).decls.filter(_.isConstructor).head
-    val methodSymbol = ctor.asMethod
-    val paramss = methodSymbol.paramLists
+    val targetTpe = computeType(target.tpt)
+    val targetCompanion = targetTpe.typeSymbol.companion
+    val targetCtor = targetTpe.decls.filter(_.isConstructor).head
+    val targetCtorSym = targetCtor.asMethod
+    val paramss = targetCtorSym.paramLists
 
-    val vparamss = paramss.map(_.map {
-      paramSymbol => ValDef(
-        Modifiers(Flag.PARAM, tpnme.EMPTY, List()),
-        paramSymbol.name.toTermName,
-        TypeTree(paramSymbol.typeSignature),
-        EmptyTree)
+    val vparamss = paramss.map(_.zipWithIndex.map {
+      case (paramSymbol, i) =>
+        // This is the way to get default value from the companion object apply method
+        val methodWithDefault = TermName(targetCtorSym.name + "$default$" + (i + 1)).encodedName.toTermName
+
+        targetTpe.companion.member(methodWithDefault) match {
+          case NoSymbol => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignature}"  // No default value
+          case _ => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignature} = ${targetCompanion}.$methodWithDefault"
+        }
     })
 
-    // We assume the number of sets of brackets is just 1
-    // i.e. (v: Int), and not (v: Int)(x: Int)
-    val vparams = vparamss.head
-
-    val invocationTree = methodSymbol.typeSignature match {
-      case NullaryMethodType(_) =>
-        Select(Ident(param.name), methodSymbol.name)
+    val invocationTree = targetCtorSym.typeSignature match {
+      case NullaryMethodType(_) => q"$target.$targetCtorSym"  // Non-parentheses method
       case _ =>
-        val pams = methodSymbol.paramss.flatMap(_.map(param => Ident(param.name)))
-        q"new $classTypeName($innerTerm(..$pams))"
+        val flattenedParams = targetCtorSym.paramss.flatMap(_.map(target => Ident(target.name)))
+        q"new $classTypeName($innerCaseClass(..$flattenedParams))"
     }
 
-    q"def apply(..$vparams): $classTypeName = $invocationTree"
+    q"def apply(...$vparamss): $classTypeName = $invocationTree"
   }
 
   def impl(annottees: Tree*): Tree = {
