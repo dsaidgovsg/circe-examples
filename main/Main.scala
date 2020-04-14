@@ -133,10 +133,10 @@ object Main extends App {
 
   val x: Base = B1.X(1)
   val y: B1 = B1.Y(1)
-  val z: Base = B2.Z("abc")
+  val z: B2 = B2.Z("abc")
   val a: Base = B2.A(123, List(456, 789), "def")
-  val b: Base = B2.B("Hello!")
-  val c: B2 = B2.C(NonEmptyList.one(123))
+  val b: Base = Base.B("Hello!")
+  val c: Base = Base.C(NonEmptyList.one(123))
 
   val encodedX = np.pretty(x.asJson)
   val decodedX = decode[Base](encodedX).right.get
