@@ -13,6 +13,7 @@ import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
+import circeeg.util.EmptyMapAsNone
 import circeeg.util.ExprEnum
 import circeeg.util.NoneDefault._
 import circeeg.util.Sorl
@@ -25,6 +26,41 @@ object Main extends App {
   def pp[T](title: String, v: T) = {
     val dashes = "-" * title.length
     println(s"\n$title\n$dashes\n$v\n")
+  }
+
+  //
+  // EmptyDictAsNone
+  //
+
+  {
+    val eman1: EmptyMapAsNone[String] = EmptyMapAsNone.empty
+    val emanEncoded1 = eman1.asJson.noSpaces
+    pp("Eman encoded 1", emanEncoded1)
+    val emanDecoded1 = decode[EmptyMapAsNone[String]](emanEncoded1).right.get
+    pp("Eman decoded 1", emanDecoded1)
+  }
+
+  {
+    val emanEncoded2 = "null"
+    pp("Eman encoded 2", emanEncoded2)
+    val emanDecoded2 = decode[EmptyMapAsNone[String]](emanEncoded2).right.get
+    pp("Eman decoded 2", emanDecoded2)
+  }
+
+  {
+    val eman3 = EmptyMapAsNone("hello")
+    val emanEncoded3 = eman3.asJson.noSpaces
+    pp("Eman encoded 3", emanEncoded3)
+    val emanDecoded3 = decode[EmptyMapAsNone[String]](emanEncoded3).right.get
+    pp("Eman decoded 3", emanDecoded3)
+  }
+
+  {
+    val eman4 = EmptyMapAsNone(Map("a" -> 1, "b" -> 2))
+    val emanEncoded4 = eman4.asJson.noSpaces
+    pp("Eman encoded 4", emanEncoded4)
+    val emanDecoded4 = decode[EmptyMapAsNone[Map[String, Int]]](emanEncoded4).right.get
+    pp("Eman decoded 4", emanDecoded4)
   }
 
   //
