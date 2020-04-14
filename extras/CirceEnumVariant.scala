@@ -34,24 +34,51 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
       case tq"$child" => q"${TermName(child.toString)}"
     }
 
-  private[this] def typeCheckExpressionOfType(typeTree: Tree): Type =
-    c.typeCheck(changeFirstTypeNameToTermName(typeTree)).tpe
+  private[this] def typeCheckExpressionOfType(typeTree: Tree): Type = {
+    c.typecheck(tree = typeTree, mode = c.TYPEmode).tpe
+  }
 
   private[this] def computeType(tpt: Tree): Type = {
-    val calculatedType = c.typeCheck(tpt.duplicate, silent = true, withMacrosDisabled = true).tpe
-    val resultType = if (tpt.tpe == null) calculatedType else tpt.tpe
-
-    if (resultType == NoType) {
-      typeCheckExpressionOfType(tpt)
+    if (tpt.tpe != null) {
+      tpt.tpe
     } else {
-      resultType
+      typeCheckExpressionOfType(tpt)
     }
+  }
+
+  private[this] def extractCtor(target: ValDef, innerCaseClass: Tree, classTypeName: TypeName) = {
+    // We assume only one constructor (i.e. default apply method for companion object)
+    val targetTpe = computeType(target.tpt)
+    val targetCompanion = targetTpe.typeSymbol.companion
+    val targetCtor = targetTpe.decls.filter(_.isConstructor).head
+    val targetCtorSym = targetCtor.asMethod
+    val paramss = targetCtorSym.paramLists
+
+    val vparamss = paramss.map(_.zipWithIndex.map {
+      case (paramSymbol, i) =>
+        // This is the way to get default value from the companion object apply method
+        val methodWithDefault = TermName(targetCtorSym.name + "$default$" + (i + 1)).encodedName.toTermName
+
+        targetTpe.companion.member(methodWithDefault) match {
+          case NoSymbol => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignature}"  // No default value
+          case _ => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignature} = ${targetCompanion}.$methodWithDefault"
+        }
+    })
+
+    val invocationTree = targetCtorSym.typeSignature match {
+      case NullaryMethodType(_) => q"$target.$targetCtorSym"  // Non-parentheses method
+      case _ =>
+        val flattenedParams = targetCtorSym.paramss.flatMap(_.map(target => Ident(target.name)))
+        q"new $classTypeName($innerCaseClass(..$flattenedParams))"
+    }
+
+    q"def apply(...$vparamss): $classTypeName = $invocationTree"
   }
 
   def impl(annottees: Tree*): Tree = {
     annottees match {
-      case (clsDef @ q"$mods class $className(..$fields) extends { ..$earlydefns } with ..$parents { $self => ..$stats }") :: _ if fields.length == 1 => {
-        val classTypeName = className
+      case (clsDef @ q"$mods class $tpname(..$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }") :: _ if paramss.length == 1 => {
+        val classTypeName = tpname
         val classTermName = classTypeName.toTermName
         val classTypeStr = classTypeName.decodedName.toString
 
@@ -64,16 +91,16 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         // Select(Select(Ident(TermName("circeeg")), TermName("util")), TermName("X"))
         // We will follow the above to get to what we need
 
-        // fieldTypeSelect gives the following example
+        // paramTypeSelect gives the following example
         // Select(Select(Ident(TermName("circeeg")), TermName("util")), TypeName("X"))
         // Note the very last element (actually the first because prefix notation) is TypeName
         // We need to convert to TermName to get the companion object
-        val field = fields(0)
-        val fieldName = field.name
-        val fieldTypeSelect = field.tpt
+        val param = paramss.head
+        val paramName = param.name
+        val paramTypeSelect = param.tpt
 
         // Changing the TypeName to TermName gives us the companion object
-        val fieldTermSelect = changeFirstTypeNameToTermName(fieldTypeSelect)
+        val paramTermSelect = changeFirstTypeNameToTermName(paramTypeSelect)
 
         val q"..$imports" = q"""
           import cats.syntax.either._
@@ -82,21 +109,23 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
 
         val q"..$codecVals" = q"""
           implicit val $encoderTermName: io.circe.Encoder[$classTypeName] = new io.circe.Encoder[$classTypeName] {
-            final def apply(v: $classTypeName) = v.$fieldName.asJson
+            final def apply(v: $classTypeName) = v.$paramName.asJson
           }
 
           implicit val $decoderTermName: io.circe.Decoder[$classTypeName] = new io.circe.Decoder[$classTypeName] {
-            final def apply(c: io.circe.HCursor) = for { v <- c.as[$fieldTypeSelect] } yield { new $classTypeName(v) }
+            final def apply(c: io.circe.HCursor) = for { v <- c.as[$paramTypeSelect] } yield { new $classTypeName(v) }
           }
           """
 
         caseClassForwarding match {
           case true =>
+            val ctor = extractCtor(param, paramTermSelect, classTypeName)
+
             q"""
             ..$imports; $clsDef; ..$codecVals
 
             object $classTermName {
-              def apply = circeeg.extras.Func.mapResult($fieldTermSelect.apply _)(new $classTypeName(_))
+              $ctor
             }
             """
           case false => q"..$imports; $clsDef; ..$codecVals"

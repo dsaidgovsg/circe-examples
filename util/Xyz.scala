@@ -56,9 +56,9 @@ case class Z(v: String) extends UselessToo {
 }
 
 @ConfiguredJsonCodec
-case class A(x: Int, y: List[Int], z: String) extends UselessToo {
-  override def foo(): String = "A-foo"
-  override def foo(x: Int): Int = id + x
+case class A(w: Int = 111, y: List[Int] = List(1, 2, 3), z: String = "Hello World!") extends UselessToo {
+  override def foo(): String = z
+  override def foo(x: Int): Int = x + id + w + y.sum
   // override def foo(x: Int)(y: Int): Int = foo(x) + y
-  override def id: Int = 3
+  override def id: Int = w
 }

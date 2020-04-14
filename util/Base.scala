@@ -15,10 +15,20 @@ import circeeg.util.Conf.custom
 sealed trait Base extends Useless
 
 @ConfiguredJsonCodec
-sealed trait B1 extends Base
+sealed trait B1 extends Base {
+  val v: Useless
+  def foo(): String = v.foo()
+  def foo(x: Int): Int = v.foo(x)
+  def id: Int = v.id
+}
 
 @ConfiguredJsonCodec
-sealed trait B2 extends Base
+sealed trait B2 extends Base {
+  val v: Useless
+  def foo(): String = v.foo()
+  def foo(x: Int): Int = v.foo(x)
+  def id: Int = v.id
+}
 
 
 object B1 {
@@ -31,33 +41,33 @@ object B1 {
   // but at least we have a second-say on how the enum component here is named
 
   @CirceEnumVariant
-  final case class X(@delegate v: circeeg.util.X) extends B1
+  final case class X(v: circeeg.util.X) extends B1
 
   @CirceEnumVariant
-  final case class Y(@delegate v: circeeg.util.Y) extends B1
+  final case class Y(v: circeeg.util.Y) extends B1
 }
 
 object B2 {
   @CirceEnumVariant
-  final case class Z(@delegate v: circeeg.util.Z) extends B2
+  final case class Z(v: circeeg.util.Z) extends B2
 
   // A uses arity-3
   @CirceEnumVariant
-  final case class A(@delegate v: circeeg.util.A) extends B2
+  final case class A(v: circeeg.util.A) extends B2
+}
 
+object Base {
   @CirceEnumVariant(case_class_fwd = false)
-  final case class B(v: String) extends B2 {
+  final case class B(v: String) extends Base {
     def foo(): String = "abc"
     def foo(x: Int): Int = id + 1
     def id: Int = 777
   }
 
   @CirceEnumVariant(case_class_fwd = false)
-  final case class C(v: NonEmptyList[Int]) extends B2 {
+  final case class C(v: NonEmptyList[Int]) extends Base {
     def foo(): String = "NonEmptyList"
     def foo(x: Int): Int = id + 1
     def id: Int = 88
   }
 }
-
-object Base
