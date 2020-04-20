@@ -54,6 +54,10 @@ object B2 {
   // A uses arity-3
   @CirceEnumVariant
   final case class A(v: circeeg.util.A) extends B2
+
+  // Empty has no param in ctor
+  @CirceEnumVariant
+  final case class E(v: circeeg.util.Empty) extends B2
 }
 
 object Base {
@@ -69,5 +73,11 @@ object Base {
     def foo(): String = "NonEmptyList"
     def foo(x: Int): Int = id + 1
     def id: Int = 88
+  }
+
+  final case class D() extends Base {
+    def foo(): String = "Empty variant"
+    def foo(x: Int): Int = id + 1
+    def id: Int = 99
   }
 }
