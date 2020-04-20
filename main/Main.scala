@@ -135,8 +135,10 @@ object Main extends App {
   val y: B1 = B1.Y(1)
   val z: B2 = B2.Z("abc")
   val a: Base = B2.A()  // Default values work
+  val e: B2 = B2.E()  // Variant with empty ctor works too
   val b: Base = Base.B("Hello!")
   val c: Base = Base.C(NonEmptyList.one(123))
+  val d: Base = Base.D()  // Variant with no fields works too
 
   val encodedX = np.pretty(x.asJson)
   val decodedX = decode[Base](encodedX).right.get
@@ -170,6 +172,14 @@ object Main extends App {
   pp("a-foo(0)", decodedA.foo(0))
   pp("a-id", decodedA.id)
 
+  val encodedE = np.pretty(e.asJson)
+  val decodedE = decode[Base](encodedE).right.get
+  pp("empty-encode", encodedE)
+  pp("empty-decode", decodedE)
+  pp("empty-foo", decodedE.foo)
+  pp("empty-foo(0)", decodedE.foo(0))
+  pp("empty-id", decodedE.id)
+
   val encodedB = np.pretty(b.asJson)
   val decodedB = decode[Base](encodedB).right.get
   pp("b-encode", encodedB)
@@ -185,6 +195,14 @@ object Main extends App {
   pp("c-foo", decodedC.foo)
   pp("c-foo(0)", decodedC.foo(0))
   pp("c-id", decodedC.id)
+
+  val encodedD = np.pretty(d.asJson)
+  val decodedD = decode[Base](encodedD).right.get
+  pp("d-encode", encodedD)
+  pp("d-decode", decodedD)
+  pp("d-foo", decodedD.foo)
+  pp("d-foo(0)", decodedD.foo(0))
+  pp("d-id", decodedD.id)
 
   //
   // Filter

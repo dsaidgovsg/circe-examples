@@ -2,6 +2,7 @@ package circeeg.util
 
 import java.net.Socket
 
+import io.circe.generic.JsonCodec
 import io.circe.generic.extras.ConfiguredJsonCodec
 
 import circeeg.util.Conf.custom
@@ -61,4 +62,12 @@ case class A(w: Int = 111, y: List[Int] = List(1, 2, 3), z: String = "Hello Worl
   override def foo(x: Int): Int = x + id + w + y.sum
   // override def foo(x: Int)(y: Int): Int = foo(x) + y
   override def id: Int = w
+}
+
+@JsonCodec
+case class Empty() extends UselessToo {
+  override def foo(): String = "EMPTY!"
+  override def foo(x: Int): Int = id + 1
+  // override def foo(x: Int)(y: Int): Int = foo(x) + y
+  override def id: Int = 123
 }
