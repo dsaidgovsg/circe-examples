@@ -4,7 +4,7 @@ val circeVersion = "0.12.0-M3"
 val enumeratumCirceVersion = "1.5.23"
 
 val commonSettings = Seq(
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.8",
   version := "0.1.0-SNAPSHOT",
   organization := "circeeg",
   organizationName := "circeeg",
