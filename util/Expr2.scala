@@ -9,10 +9,10 @@ import circeeg.util.Conf.custom
 sealed trait Expr2 extends Expr2Impl
 
 object Expr2 {
-  @CirceEnumVariant(case_class_fwd = false)
+  @CirceEnumVariant
   case class Lit(v: Int) extends LitImpl(v) with Expr2
 
-  @CirceEnumVariant(case_class_fwd = false)
+  @CirceEnumVariant
   case class Add(v: Seq[Expr2]) extends AddImpl(v) with Expr2
 
   // Cannot forward since two params

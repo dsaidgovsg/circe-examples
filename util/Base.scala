@@ -61,14 +61,14 @@ object B2 {
 }
 
 object Base {
-  @CirceEnumVariant(case_class_fwd = false)
+  @CirceEnumVariant
   final case class B(v: String) extends Base {
     def foo(): String = "abc"
     def foo(x: Int): Int = id + 1
     def id: Int = 777
   }
 
-  @CirceEnumVariant(case_class_fwd = false)
+  @CirceEnumVariant
   final case class C(v: NonEmptyList[Int]) extends Base {
     def foo(): String = "NonEmptyList"
     def foo(x: Int): Int = id + 1

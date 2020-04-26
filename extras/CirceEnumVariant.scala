@@ -5,7 +5,7 @@ import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
-class CirceEnumVariant(case_class_fwd: Boolean = true) extends StaticAnnotation {
+class CirceEnumVariant extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro CirceEnumVariantMacro.impl
 }
 
@@ -18,21 +18,6 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
       case _ => c.abort(c.enclosingPosition, "Unexpected macro application")
     }
   }
-
-  private[this] val caseClassForwarding: Boolean = {
-    c.prefix.tree match {
-      case q"new ${`macroName`}()" => true
-      case q"new ${`macroName`}(case_class_fwd = true)" => true
-      case q"new ${`macroName`}(case_class_fwd = false)" => false
-      case _ => c.abort(c.enclosingPosition, s"Unsupported arguments supplied to @$macroName")
-    }
-  }
-
-  private[this] def changeFirstTypeNameToTermName(t: Tree): Tree =
-    t match {
-      case tq"$base.$child" => q"$base.${child.toTermName}"
-      case tq"$child" => q"${TermName(child.toString)}"
-    }
 
   private[this] def typeCheckExpressionOfType(typeTree: Tree): Type = {
     c.typecheck(tree = typeTree, mode = c.TYPEmode).tpe
@@ -52,7 +37,9 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
     val targetCompanion = targetTpe.typeSymbol.companion
     val targetCtor = targetTpe.decls.filter(_.isConstructor).head
     val targetCtorSym = targetCtor.asMethod
-    val paramss = targetCtorSym.paramLists
+
+    // Need .typeSignatureIn to resolve any possible generic types in the signature to the actual types
+    val paramss = targetCtorSym.typeSignatureIn(targetTpe).paramLists
 
     val vparamss = paramss.map(_.zipWithIndex.map {
       case (paramSymbol, i) =>
@@ -60,8 +47,8 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         val methodWithDefault = TermName(targetCtorSym.name + "$default$" + (i + 1)).encodedName.toTermName
 
         targetTpe.companion.member(methodWithDefault) match {
-          case NoSymbol => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignature}"  // No default value
-          case _ => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignature} = ${targetCompanion}.$methodWithDefault"
+          case NoSymbol => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignatureIn(targetTpe)}"  // No default value
+          case _ => q"val ${paramSymbol.name.toTermName}: ${paramSymbol.typeSignatureIn(targetTpe)} = ${targetCompanion}.$methodWithDefault"
         }
     })
 
@@ -99,8 +86,16 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         val paramName = param.name
         val paramTypeSelect = param.tpt
 
-        // Changing the TypeName to TermName gives us the companion object
-        val paramTermSelect = changeFirstTypeNameToTermName(paramTypeSelect)
+        // Get fully qualified type name (e.g. scala.Int)
+        val paramTypeFullName = computeType(paramTypeSelect).resultType.baseClasses.head.fullName
+
+        // Convert type name in string form into fully qualified term tree (companion object construct)
+        // This loses the generic type argument, but perfectly fine since this is a companion object
+        val paramTermFullTree = c.parse(paramTypeFullName)
+
+        // Get the characteristics of the fully qualified type name
+        val paramClass = c.mirror.staticClass(paramTypeFullName)
+        val isParamCaseClass = paramClass.isCaseClass
 
         val q"..$imports" = q"""
           import cats.syntax.either._
@@ -117,9 +112,9 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
           }
           """
 
-        caseClassForwarding match {
+        isParamCaseClass match {
           case true =>
-            val ctor = extractCtor(param, paramTermSelect, classTypeName)
+            val ctor = extractCtor(param, paramTermFullTree, classTypeName)
 
             q"""
             ..$imports; $clsDef; ..$codecVals
