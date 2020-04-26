@@ -14,6 +14,7 @@ import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
 import circeeg.util.Conf.custom
 import circeeg.util.EmptyMapAsNone
+import circeeg.util.Expr2
 import circeeg.util.ExprEnum
 import circeeg.util.NoneDefault._
 import circeeg.util.Sorl
@@ -61,6 +62,35 @@ object Main extends App {
     pp("Eman encoded 4", emanEncoded4)
     val emanDecoded4 = decode[EmptyMapAsNone[Map[String, Int]]](emanEncoded4).right.get
     pp("Eman decoded 4", emanDecoded4)
+  }
+
+  //
+  // Expr2
+  //
+
+  {
+    import Expr2._
+
+    val expr1: Expr2 = Lit(111)
+    val exprEncoded1 = expr1.asJson.noSpaces
+    pp("Expr encoded 1", exprEncoded1)
+    val exprDecoded1 = decode[Expr2](exprEncoded1).right.get
+    pp("Expr decoded 1", exprDecoded1)
+    pp("Expr eval 1", exprDecoded1.eval)
+
+    val expr2: Expr2 = Add(Seq(Lit(111), Add(Seq(Lit(111), Lit(222)))))
+    val exprEncoded2 = expr2.asJson.noSpaces
+    pp("Expr encoded 2", exprEncoded2)
+    val exprDecoded2 = decode[Expr2](exprEncoded2).right.get
+    pp("Expr decoded 2", exprDecoded2)
+    pp("Expr eval 2", exprDecoded2.eval)
+
+    val expr3: Expr2 = Add2(Lit(123), Lit(456))
+    val exprEncoded3 = expr3.asJson.noSpaces
+    pp("Expr encoded 3", exprEncoded3)
+    val exprDecoded3 = decode[Expr2](exprEncoded3).right.get
+    pp("Expr decoded 3", exprDecoded3)
+    pp("Expr eval 3", exprDecoded3.eval)
   }
 
   //
