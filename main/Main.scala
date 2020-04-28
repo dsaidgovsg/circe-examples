@@ -8,7 +8,7 @@ import io.circe.syntax.EncoderOps
 import io.circe.Printer
 import java.time.{Duration, ZonedDateTime}
 
-import circeeg.util.{Base, B1, B2}
+import circeeg.util.{Base, B0, B1, B2}
 import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
@@ -161,6 +161,7 @@ object Main extends App {
 
   // You could go with either Base, B1, B2
 
+  val random: B0 = B0.Random("Impl case class can be any name", 777)
   val x: Base = B1.X(1)
   val y: B1 = B1.Y(1)
   val z: B2 = B2.Z("abc")
@@ -169,6 +170,11 @@ object Main extends App {
   val b: Base = Base.B("Hello!")
   val c: Base = Base.C(NonEmptyList.one(123))
   val d: Base = Base.D()  // Variant with no fields works too
+
+  val encodedRandom = np.pretty(random.asJson)
+  val decodedRandom = decode[B0](encodedRandom).right.get
+  pp("random-encode", encodedRandom)
+  pp("random-decode", decodedRandom)
 
   val encodedX = np.pretty(x.asJson)
   val decodedX = decode[Base](encodedX).right.get
