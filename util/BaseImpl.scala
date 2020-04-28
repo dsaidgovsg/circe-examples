@@ -33,6 +33,9 @@ trait UselessToo extends Useless {
 // works
 
 @ConfiguredJsonCodec
+case class AnyNameIsFine(x: String, y: Int)
+
+@ConfiguredJsonCodec
 case class X(v: Int) extends UselessToo {
   override def foo(): String = "X-foo"
   override def foo(x: Int): Int = id + x
