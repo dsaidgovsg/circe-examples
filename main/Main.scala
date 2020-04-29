@@ -18,6 +18,7 @@ import circeeg.util.Expr2
 import circeeg.util.ExprEnum
 import circeeg.util.NoneDefault._
 import circeeg.util.Sorl
+import circeeg.util.Untagged2
 
 object Main extends App {
   val np = Printer.spaces2
@@ -27,6 +28,35 @@ object Main extends App {
   def pp[T](title: String, v: T) = {
     val dashes = "-" * title.length
     println(s"\n$title\n$dashes\n$v\n")
+  }
+
+  //
+  // Untagged2
+  //
+
+  {
+    val u1: Untagged2[String, Seq[String]] = Untagged2.from1("Hello World!")
+    val u1Encoded = u1.asJson.noSpaces
+    pp("U1 encoded", u1Encoded)
+    val u1Decoded = decode[Untagged2[String, Seq[String]]](u1Encoded).right.get
+    pp("U1 decoded", u1Decoded)
+
+    val u2: Untagged2[String, Seq[String]] = Untagged2.from2(Seq("abc", "def"))
+    val u2Encoded = u2.asJson.noSpaces
+    pp("U2 encoded", u2Encoded)
+    val u2Decoded = decode[Untagged2[String, Seq[String]]](u2Encoded).right.get
+    pp("U2 decoded", u2Decoded)
+  }
+
+  {
+    // Starts from T2
+    val u3: Untagged2[String, String] = Untagged2.from2("YEAH!")
+    pp("U3 decoded (original)", u3)
+    val u3Encoded = u3.asJson.noSpaces
+    pp("U3 encoded", u3Encoded)
+    val u3Decoded = decode[Untagged2[String, String]](u3Encoded).right.get
+    // But should decode to T1
+    pp("U3 decoded", u3Decoded)
   }
 
   //
