@@ -3,11 +3,18 @@ import Dependencies._
 val circeVersion = "0.12.0-M3"
 val enumeratumCirceVersion = "1.5.23"
 
+// The set-up no longer supports for 2.11
 val commonSettings = Seq(
   scalaVersion := "2.12.8",
   version := "0.1.0-SNAPSHOT",
   organization := "circeeg",
   organizationName := "circeeg",
+  scalacOptions ++= Seq(
+    "-feature",
+    "-deprecation",
+    "-Ywarn-unused",
+    "-Yrangepos"
+  ),
   libraryDependencies ++=
     Seq(
       "io.circe" %% "circe-core",
@@ -30,10 +37,7 @@ lazy val util = (project in file("util")).dependsOn(extras)
     commonSettings
   )
 
-lazy val main = (project in file("main")).dependsOn(util)
+lazy val root = (project in file(".")).dependsOn(util)
   .settings(
     commonSettings
   )
-
-lazy val root = (project in file("."))
-  .aggregate(main)

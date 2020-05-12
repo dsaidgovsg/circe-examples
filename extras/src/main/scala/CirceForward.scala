@@ -28,11 +28,8 @@ private class CirceForwardMacro(val c: whitebox.Context) {
 
         val q"$objTerm" = q"""
           object $classTermName {
-            import cats.syntax.either._
-            import io.circe.syntax._
-
             implicit val $encoderTermName: io.circe.Encoder[$classTypeName] = new io.circe.Encoder[$classTypeName] {
-              final def apply(v: $classTypeName) = v.$fieldName.asJson
+              final def apply(v: $classTypeName) = io.circe.syntax.EncoderOps(v.$fieldName).asJson
             }
 
             implicit val $decoderTermName: io.circe.Decoder[$classTypeName] = new io.circe.Decoder[$classTypeName] {
