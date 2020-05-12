@@ -2,10 +2,10 @@ package circeeg.extras
 
 import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
-import scala.reflect.macros.Context
+import scala.reflect.macros.whitebox.Context
 
 class delegate extends StaticAnnotation {
-  def macroTransform(annottees: Any*) = macro delegateMacro.impl
+  def macroTransform(annottees: Any*): Any = macro delegateMacro.impl
 }
 
 object delegateMacro {
@@ -68,9 +68,9 @@ object delegateMacro {
       } yield {
         val methodSymbol = methodToAdd.asMethod
 
-        val vparamss = methodSymbol.paramss.map(_.map {
+        val vparamss = methodSymbol.paramLists.map(_.map {
           paramSymbol => ValDef(
-            Modifiers(Flag.PARAM, tpnme.EMPTY, List()),
+            Modifiers(Flag.PARAM, typeNames.EMPTY, List()),
             paramSymbol.name.toTermName,
             TypeTree(paramSymbol.typeSignature),
             EmptyTree)
@@ -81,7 +81,7 @@ object delegateMacro {
           case _ =>
             Apply(
               Select(Ident(valDef.name), methodSymbol.name),
-              methodSymbol.paramss.flatMap(_.map(param => Ident(param.name)))) // TODO - multi params list
+              methodSymbol.paramLists.flatMap(_.map(param => Ident(param.name)))) // TODO - multi params list
         } 
 
         val methodDef = DefDef(Modifiers(),

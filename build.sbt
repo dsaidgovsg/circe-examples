@@ -2,6 +2,7 @@ import Dependencies._
 
 val circeVersion = "0.12.0-M3"
 val enumeratumCirceVersion = "1.5.23"
+val silencerVersion = "1.6.0"
 
 inThisBuild(
   Seq(
@@ -32,6 +33,11 @@ val commonSettings = Seq(
     ).map(_ % circeVersion) ++
     Seq(
       "com.beachape" %% "enumeratum-circe" % enumeratumCirceVersion,
+    ) ++
+    Seq(
+      // Scalafix warning silencer (only required for < Scala 2.13)
+      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
     )
 )
 

@@ -4,10 +4,13 @@ import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
+import com.github.ghik.silencer.silent
+
 class CirceEnumVariant extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro CirceEnumVariantMacro.impl
 }
 
+@silent
 private class CirceEnumVariantMacro(val c: whitebox.Context) {
   import c.universe._
 
@@ -47,7 +50,7 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
     val invocationTree = targetCtorSym.typeSignature match {
       case NullaryMethodType(_) => q"$target.$targetCtorSym"  // Non-parentheses method
       case _ =>
-        val flattenedParams = targetCtorSym.paramss.flatMap(_.map(target => Ident(target.name)))
+        val flattenedParams = targetCtorSym.paramLists.flatMap(_.map(target => Ident(target.name)))
         q"new $classTypeName($innerCaseClass(..$flattenedParams))"
     }
 

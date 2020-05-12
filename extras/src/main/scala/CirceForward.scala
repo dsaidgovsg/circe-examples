@@ -4,10 +4,13 @@ import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
+import com.github.ghik.silencer.silent
+
 class CirceForward extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro CirceForwardMacro.impl
 }
 
+@silent
 private class CirceForwardMacro(val c: whitebox.Context) {
   import c.universe._
 
