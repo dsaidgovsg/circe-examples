@@ -23,7 +23,6 @@ class Untagged2[T1, T2] private {
 }
 
 object Untagged2 {
-  import cats.syntax.either._
   import io.circe.syntax._
 
   sealed trait Variant[T1, T2]

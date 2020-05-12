@@ -1,12 +1,12 @@
 package circeeg.util
 
+import scala.util.Right
+
 import io.circe.{Decoder, Encoder, HCursor, Json}
-import scala.util.{Left, Right}
 
 case class EmptyMapAsNone[A](val toOption: Option[A])
 
 object EmptyMapAsNone {
-  import cats.syntax.either._
   import io.circe.syntax._
 
   final def apply[A](x: A): EmptyMapAsNone[A] = EmptyMapAsNone[A](Option(x))

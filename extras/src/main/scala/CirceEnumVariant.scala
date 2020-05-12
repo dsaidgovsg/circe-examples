@@ -1,7 +1,6 @@
 package circeeg.extras
 
 import scala.annotation.StaticAnnotation
-import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
@@ -48,7 +47,7 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
     val invocationTree = targetCtorSym.typeSignature match {
       case NullaryMethodType(_) => q"$target.$targetCtorSym"  // Non-parentheses method
       case _ =>
-        val flattenedParams = targetCtorSym.paramss.flatMap(_.map(target => Ident(target.name)))
+        val flattenedParams = targetCtorSym.paramLists.flatMap(_.map(target => Ident(target.name)))
         q"new $classTypeName($innerCaseClass(..$flattenedParams))"
     }
 
@@ -57,7 +56,7 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
 
   def impl(annottees: Tree*): Tree = {
     annottees match {
-      case (clsDef @ q"$mods class $tpname(..$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }") :: _ if paramss.length == 1 => {
+      case (clsDef @ q"$_ class $tpname(..$paramss) extends { ..$_ } with ..$_ { $_ => ..$_ }") :: _ if paramss.length == 1 => {
         val classTypeName = tpname
         val classTermName = classTypeName.toTermName
         val classTypeStr = classTypeName.decodedName.toString

@@ -1,8 +1,8 @@
 package circeeg.util
 
-import io.circe.generic.JsonCodec
-import io.circe.generic.extras.ConfiguredJsonCodec
 import java.time.{Duration, ZonedDateTime}
+
+import io.circe.generic.extras.ConfiguredJsonCodec
 
 import circeeg.util.Conf.custom
 

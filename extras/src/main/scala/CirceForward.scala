@@ -1,7 +1,6 @@
 package circeeg.extras
 
 import scala.annotation.StaticAnnotation
-import scala.annotation.compileTimeOnly
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
@@ -14,7 +13,7 @@ private class CirceForwardMacro(val c: whitebox.Context) {
 
   def impl(annottees: Tree*): Tree = {
     annottees match {
-      case (clsDef @ q"case class $className(..$fields) extends { ..$earlydefns } with ..$parents { $self => ..$stats }") :: _ if fields.length == 1 => {
+      case (clsDef @ q"case class $className(..$fields) extends { ..$_ } with ..$_ { $_ => ..$_ }") :: _ if fields.length == 1 => {
         val classTypeName = className
         val classTermName = classTypeName.toTermName
         val classTypeStr = classTypeName.decodedName.toString
