@@ -8,7 +8,10 @@ inThisBuild(
   Seq(
     semanticdbEnabled := true,
     semanticdbVersion := scalafixSemanticdb.revision,
-    scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.3.2"
+    scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.3.2",
+
+    resolvers += Resolver.sonatypeRepo("releases"),
+    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full)
   )
 )
 
