@@ -16,11 +16,7 @@ object delegateMacro {
       c.error(c.enclosingPosition, "This annotation can only be used on vals")
     }
 
-    def changeFirstTypeNameToTermName(t: Tree): Tree =
-      t match {
-        case tq"$base.$child" => q"$base.${child.toTermName}"
-        case tq"$child" => q"${TermName(child.toString)}"
-      }
+    
 
     def typeCheckExpressionOfType(typeTree: Tree): Type = {
       c.typecheck(tree = typeTree, mode = c.TYPEmode).tpe

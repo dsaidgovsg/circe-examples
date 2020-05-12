@@ -1,8 +1,6 @@
 package circeeg.util
 
-import io.circe.generic.extras.ConfiguredJsonCodec
 
-import circeeg.util.Conf.custom
 
 trait Expr2Impl {
   def eval: Int

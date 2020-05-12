@@ -1,10 +1,9 @@
 package circeeg.util
 
 import cats.data.NonEmptyList
-import cats.syntax.either._
 import io.circe.generic.extras.ConfiguredJsonCodec
 
-import circeeg.extras.{CirceEnumVariant, delegate}
+import circeeg.extras.CirceEnumVariant
 import circeeg.util.Conf.custom
 
 // Scala has a fairly cheat way to "union" the ADT variants if the variants

@@ -3,6 +3,14 @@ import Dependencies._
 val circeVersion = "0.12.0-M3"
 val enumeratumCirceVersion = "1.5.23"
 
+inThisBuild(
+  Seq(
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
+    scalafixDependencies += "com.nequissimus" %% "sort-imports" % "0.3.2"
+  )
+)
+
 // The set-up no longer supports for 2.11
 val commonSettings = Seq(
   scalaVersion := "2.12.8",
@@ -32,12 +40,16 @@ lazy val extras = (project in file("extras"))
     commonSettings
   )
 
-lazy val util = (project in file("util")).dependsOn(extras)
+lazy val util = (project in file("util"))
+  .aggregate(extras)
+  .dependsOn(extras)
   .settings(
     commonSettings
   )
 
-lazy val root = (project in file(".")).dependsOn(util)
+lazy val root = (project in file("."))
+  .aggregate(util)
+  .dependsOn(util)
   .settings(
     commonSettings
   )

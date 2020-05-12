@@ -9,10 +9,8 @@ import io.circe.Printer
 import java.time.{Duration, ZonedDateTime}
 
 import circeeg.util.{Base, B0, B1, B2}
-import circeeg.util.{FooVal, BarVal, Other}
 import circeeg.util.{Filter, DwellTimeFilter}
 import circeeg.util.{AgeBand, Demo, Gender}
-import circeeg.util.Conf.custom
 import circeeg.util.EmptyMapAsNone
 import circeeg.util.Expr2
 import circeeg.util.ExprEnum
@@ -201,12 +199,12 @@ object Main extends App {
   val c: Base = Base.C(NonEmptyList.one(123))
   val d: Base = Base.D()  // Variant with no fields works too
 
-  val encodedRandom = np.pretty(random.asJson)
+  val encodedRandom = np.print(random.asJson)
   val decodedRandom = decode[B0](encodedRandom).right.get
   pp("random-encode", encodedRandom)
   pp("random-decode", decodedRandom)
 
-  val encodedX = np.pretty(x.asJson)
+  val encodedX = np.print(x.asJson)
   val decodedX = decode[Base](encodedX).right.get
   pp("x-encode", encodedX)
   pp("x-decode", decodedX)
@@ -214,7 +212,7 @@ object Main extends App {
   pp("x-foo(0)", decodedX.foo(0))
   pp("x-id", decodedX.id)
 
-  val encodedY = np.pretty(y.asJson)
+  val encodedY = np.print(y.asJson)
   val decodedY = decode[Base](encodedY).right.get
   pp("y-encode", encodedY)
   pp("y-decode", decodedY)
@@ -222,7 +220,7 @@ object Main extends App {
   pp("y-foo(0)", decodedY.foo(0))
   pp("y-id", decodedY.id)
 
-  val encodedZ = np.pretty(z.asJson)
+  val encodedZ = np.print(z.asJson)
   val decodedZ = decode[Base](encodedZ).right.get
   pp("z-encode", encodedZ)
   pp("z-decode", decodedZ)
@@ -230,7 +228,7 @@ object Main extends App {
   pp("z-foo(0)", decodedZ.foo(0))
   pp("z-id", decodedZ.id)
 
-  val encodedA = np.pretty(a.asJson)
+  val encodedA = np.print(a.asJson)
   val decodedA = decode[Base](encodedA).right.get
   pp("a-encode", encodedA)
   pp("a-decode", decodedA)
@@ -238,7 +236,7 @@ object Main extends App {
   pp("a-foo(0)", decodedA.foo(0))
   pp("a-id", decodedA.id)
 
-  val encodedE = np.pretty(e.asJson)
+  val encodedE = np.print(e.asJson)
   val decodedE = decode[Base](encodedE).right.get
   pp("empty-encode", encodedE)
   pp("empty-decode", decodedE)
@@ -246,7 +244,7 @@ object Main extends App {
   pp("empty-foo(0)", decodedE.foo(0))
   pp("empty-id", decodedE.id)
 
-  val encodedB = np.pretty(b.asJson)
+  val encodedB = np.print(b.asJson)
   val decodedB = decode[Base](encodedB).right.get
   pp("b-encode", encodedB)
   pp("b-decode", decodedB)
@@ -254,7 +252,7 @@ object Main extends App {
   pp("b-foo(0)", decodedB.foo(0))
   pp("b-id", decodedB.id)
 
-  val encodedC = np.pretty(c.asJson)
+  val encodedC = np.print(c.asJson)
   val decodedC = decode[Base](encodedC).right.get
   pp("c-encode", encodedC)
   pp("c-decode", decodedC)
@@ -262,7 +260,7 @@ object Main extends App {
   pp("c-foo(0)", decodedC.foo(0))
   pp("c-id", decodedC.id)
 
-  val encodedD = np.pretty(d.asJson)
+  val encodedD = np.print(d.asJson)
   val decodedD = decode[Base](encodedD).right.get
   pp("d-encode", encodedD)
   pp("d-decode", decodedD)
@@ -286,10 +284,10 @@ object Main extends App {
   )
 
   // dwellTimeFilter.asJson.spaces2 also works
-  pp("encodedDwellTimeFilterWithNull", np.pretty(dwellTimeFilter.asJson))
-  pp("encodedDwellTimeFilterWithoutNull", dnp.pretty(dwellTimeFilter.asJson))
-  pp("decodedDwellTimeFilterWithNull", decode[Filter](np.pretty(dwellTimeFilter.asJson)).right.get)
-  pp("decodedDwellTimeFilterWithoutNull", decode[Filter](dnp.pretty(dwellTimeFilter.asJson)).right.get)
+  pp("encodedDwellTimeFilterWithNull", np.print(dwellTimeFilter.asJson))
+  pp("encodedDwellTimeFilterWithoutNull", dnp.print(dwellTimeFilter.asJson))
+  pp("decodedDwellTimeFilterWithNull", decode[Filter](np.print(dwellTimeFilter.asJson)).right.get)
+  pp("decodedDwellTimeFilterWithoutNull", decode[Filter](dnp.print(dwellTimeFilter.asJson)).right.get)
 
   //
   // Demo
@@ -340,19 +338,19 @@ object Main extends App {
   // Demo
 
   val demo1 = Demo(ages = None, genders = None)
-  pp("encodedDemo1WithNull", np.pretty(demo1.asJson))
-  pp("encodedDemo1WithoutNull", dnp.pretty(demo1.asJson))
-  pp("decodedDemo1WithNull", decode[Demo](np.pretty(demo1.asJson)).right.get)
-  pp("decodedDemo1WithoutNull", decode[Demo](dnp.pretty(demo1.asJson)).right.get)
+  pp("encodedDemo1WithNull", np.print(demo1.asJson))
+  pp("encodedDemo1WithoutNull", dnp.print(demo1.asJson))
+  pp("decodedDemo1WithNull", decode[Demo](np.print(demo1.asJson)).right.get)
+  pp("decodedDemo1WithoutNull", decode[Demo](dnp.print(demo1.asJson)).right.get)
 
   val demo2 = Demo(
     ages = Some(Set(AgeBand.withName("40-44"), AgeBand.withName("45-49"))),
     genders = Some(Set(Gender.withName("male"), Gender.withName("female")))
   )
-  pp("encodedDemo2WithNull", np.pretty(demo2.asJson))
-  pp("encodedDemo2WithoutNull", dnp.pretty(demo2.asJson))
-  pp("decodedDemo2WithNull", decode[Demo](np.pretty(demo2.asJson)).right.get)
-  pp("decodedDemo2WithoutNull", decode[Demo](dnp.pretty(demo2.asJson)).right.get)
+  pp("encodedDemo2WithNull", np.print(demo2.asJson))
+  pp("encodedDemo2WithoutNull", dnp.print(demo2.asJson))
+  pp("decodedDemo2WithNull", decode[Demo](np.print(demo2.asJson)).right.get)
+  pp("decodedDemo2WithoutNull", decode[Demo](dnp.print(demo2.asJson)).right.get)
 
   //
   // Others

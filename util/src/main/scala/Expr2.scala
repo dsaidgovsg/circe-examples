@@ -2,7 +2,7 @@ package circeeg.util
 
 import io.circe.generic.extras.ConfiguredJsonCodec
 
-import circeeg.extras.{CirceForward, CirceEnumVariant, delegate}
+import circeeg.extras.CirceEnumVariant
 import circeeg.util.Conf.custom
 
 @ConfiguredJsonCodec
