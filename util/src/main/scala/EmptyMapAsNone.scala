@@ -1,7 +1,8 @@
 package circeeg.util
 
-import io.circe.{Decoder, Encoder, HCursor, Json}
 import scala.util.Right
+
+import io.circe.{Decoder, Encoder, HCursor, Json}
 
 case class EmptyMapAsNone[A](val toOption: Option[A])
 

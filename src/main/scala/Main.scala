@@ -1,22 +1,22 @@
 package circeeg.main
 
-import cats.data.NonEmptyList
-import io.circe.Json
-import io.circe.parser.decode
-// This is for .asJson, usually imported as io.circe.syntax._
-import io.circe.syntax.EncoderOps
-import io.circe.Printer
 import java.time.{Duration, ZonedDateTime}
 
-import circeeg.util.{Base, B0, B1, B2}
-import circeeg.util.{Filter, DwellTimeFilter}
-import circeeg.util.{AgeBand, Demo, Gender}
+import cats.data.NonEmptyList
+import io.circe.Json
+import io.circe.Printer
+import io.circe.parser.decode
+import io.circe.syntax.EncoderOps
+
 import circeeg.util.EmptyMapAsNone
 import circeeg.util.Expr2
 import circeeg.util.ExprEnum
 import circeeg.util.NoneDefault._
 import circeeg.util.Sorl
 import circeeg.util.Untagged2
+import circeeg.util.{AgeBand, Demo, Gender}
+import circeeg.util.{Base, B0, B1, B2}
+import circeeg.util.{Filter, DwellTimeFilter}
 
 object Main extends App {
   val np = Printer.spaces2
