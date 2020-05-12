@@ -4,13 +4,10 @@ import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
-import com.github.ghik.silencer.silent
-
 class CirceEnumVariant extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro CirceEnumVariantMacro.impl
 }
 
-@silent
 private class CirceEnumVariantMacro(val c: whitebox.Context) {
   import c.universe._
 
@@ -59,7 +56,7 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
 
   def impl(annottees: Tree*): Tree = {
     annottees match {
-      case (clsDef @ q"$mods class $tpname(..$paramss) extends { ..$earlydefns } with ..$parents { $self => ..$stats }") :: _ if paramss.length == 1 => {
+      case (clsDef @ q"$_ class $tpname(..$paramss) extends { ..$_ } with ..$_ { $_ => ..$_ }") :: _ if paramss.length == 1 => {
         val classTypeName = tpname
         val classTermName = classTypeName.toTermName
         val classTypeStr = classTypeName.decodedName.toString

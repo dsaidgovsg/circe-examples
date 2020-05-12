@@ -1,5 +1,12 @@
 import Dependencies._
 
+// scalafix has bug when RemoveUnused and SortImports are used together
+// Need to specifically do RemoveUnused in order to fix things
+// https://gitter.im/scalacenter/scalafix?at=5e8aa6655d148a0460e8fe64
+// We use aliases to mask the issue
+addCommandAlias("fix", "compile:scalafix; test:scalafix; compile:scalafix RemoveUnused; test:scalafix RemoveUnused")
+addCommandAlias("check", "compile:scalafix --check; test:scalafix --check")
+
 val circeVersion = "0.12.0-M3"
 val enumeratumCirceVersion = "1.5.23"
 val silencerVersion = "1.6.0"
@@ -24,7 +31,9 @@ val commonSettings = Seq(
   scalacOptions ++= Seq(
     "-feature",
     "-deprecation",
-    "-Ywarn-unused",
+    // Cannot use "-Ywarn-unused" because of stupid bugs like
+    // https://github.com/scala/bug/issues/11918
+    "-Ywarn-unused:-patvars,_",
     "-Yrangepos"
   ),
   libraryDependencies ++=
@@ -36,11 +45,6 @@ val commonSettings = Seq(
     ).map(_ % circeVersion) ++
     Seq(
       "com.beachape" %% "enumeratum-circe" % enumeratumCirceVersion,
-    ) ++
-    Seq(
-      // Scalafix warning silencer (only required for < Scala 2.13)
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
     )
 )
 

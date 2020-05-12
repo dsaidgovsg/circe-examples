@@ -4,19 +4,16 @@ import scala.annotation.StaticAnnotation
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox
 
-import com.github.ghik.silencer.silent
-
 class CirceForward extends StaticAnnotation {
   def macroTransform(annottees: Any*): Any = macro CirceForwardMacro.impl
 }
 
-@silent
 private class CirceForwardMacro(val c: whitebox.Context) {
   import c.universe._
 
   def impl(annottees: Tree*): Tree = {
     annottees match {
-      case (clsDef @ q"case class $className(..$fields) extends { ..$earlydefns } with ..$parents { $self => ..$stats }") :: _ if fields.length == 1 => {
+      case (clsDef @ q"case class $className(..$fields) extends { ..$_ } with ..$_ { $_ => ..$_ }") :: _ if fields.length == 1 => {
         val classTypeName = className
         val classTermName = classTypeName.toTermName
         val classTypeStr = classTypeName.decodedName.toString
