@@ -8,8 +8,7 @@ This also uses `enumeratum` with `circe`-integration.
 
 You should only require the `sbt` command.
 
-Go to `main` directory, and simply run `sbt run` and you should see the
-example output.
+Simply run `sbt run` at the root directory to run the main example program.
 
 ## What should I take note
 
@@ -18,7 +17,7 @@ various types of values.
 
 For the standard kind of `circe` serialization and deserialization (let's call
 it serde) involving time and duration, look at:
-[`Filter.scala`](src/main/scala/util/Filter.scala).
+[`Filter.scala`](util/src/main/scala/Filter.scala).
 
 For enumeration related set-up, look at:
-[`Demo.scala`](src/main/scala/util/Demo.scala).
+[`Demo.scala`](util/src/main/scala/Demo.scala).

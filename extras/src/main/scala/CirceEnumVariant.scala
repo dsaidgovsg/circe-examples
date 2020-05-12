@@ -12,13 +12,6 @@ class CirceEnumVariant extends StaticAnnotation {
 private class CirceEnumVariantMacro(val c: whitebox.Context) {
   import c.universe._
 
-  private[this] val macroName: Tree = {
-    c.prefix.tree match {
-      case Apply(Select(New(name), _), _) => name
-      case _ => c.abort(c.enclosingPosition, "Unexpected macro application")
-    }
-  }
-
   private[this] def typeCheckExpressionOfType(typeTree: Tree): Type = {
     c.typecheck(tree = typeTree, mode = c.TYPEmode).tpe
   }
@@ -97,14 +90,9 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
         val paramClass = c.mirror.staticClass(paramTypeFullName)
         val isParamCaseClass = paramClass.isCaseClass
 
-        val q"..$imports" = q"""
-          import cats.syntax.either._
-          import io.circe.syntax._
-          """
-
         val q"..$codecVals" = q"""
           implicit val $encoderTermName: io.circe.Encoder[$classTypeName] = new io.circe.Encoder[$classTypeName] {
-            final def apply(v: $classTypeName) = v.$paramName.asJson
+            final def apply(v: $classTypeName) = io.circe.syntax.EncoderOps(v.$paramName).asJson
           }
 
           implicit val $decoderTermName: io.circe.Decoder[$classTypeName] = new io.circe.Decoder[$classTypeName] {
@@ -117,13 +105,13 @@ private class CirceEnumVariantMacro(val c: whitebox.Context) {
             val ctor = extractCtor(param, paramTermFullTree, classTypeName)
 
             q"""
-            ..$imports; $clsDef; ..$codecVals
+            $clsDef; ..$codecVals
 
             object $classTermName {
               $ctor
             }
             """
-          case false => q"..$imports; $clsDef; ..$codecVals"
+          case false => q"$clsDef; ..$codecVals"
         }
       }
       case _ => c.abort(

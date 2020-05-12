@@ -1,1 +1,0 @@
-name := "circe-examples-main"
